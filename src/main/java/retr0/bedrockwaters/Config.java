@@ -14,7 +14,7 @@ public class Config {
     private static Config config;
 
     private boolean childBiomesInheritParentColors = true;
-    private boolean vanillaBiomesOnly = true;
+    private boolean autoConfigureVanillaBiomesOnly = true;
     private List<BiomeConfig> biomes = new ArrayList<>();
 
     private Config() {
@@ -31,7 +31,7 @@ public class Config {
         biomes.add(BiomeConfig.builder().biomeId("minecraft:swamp").biomeProperties(BiomeProperties.builder().waterColor("#4c6559").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:river").biomeProperties(BiomeProperties.builder().waterColor("#0084FF").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:nether_wastes").biomeProperties(BiomeProperties.builder().waterColor("#905957").build()).build());
-        biomes.add(BiomeConfig.builder().biomeId("minecraft:the_end").biomeProperties(BiomeProperties.builder().waterColor("#62529e").build()).build()); // all child biomes too
+        biomes.add(BiomeConfig.builder().biomeId("minecraft:the_end").biomeProperties(BiomeProperties.builder().waterColor("#62529e").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:frozen_ocean").biomeProperties(BiomeProperties.builder().waterColor("#2570B5").waterFogColor("#174985").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:frozen_river").biomeProperties(BiomeProperties.builder().waterColor("#185390").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:snowy_tundra").biomeProperties(BiomeProperties.builder().waterColor("#14559b").build()).build());
@@ -39,7 +39,7 @@ public class Config {
         biomes.add(BiomeConfig.builder().biomeId("minecraft:mushroom_fields").biomeProperties(BiomeProperties.builder().waterColor("#8a8997").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:mushroom_field_shore").biomeProperties(BiomeProperties.builder().waterColor("#818193").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:beach").biomeProperties(BiomeProperties.builder().waterColor("#157cab").build()).build());
-        biomes.add(BiomeConfig.builder().biomeId("minecraft:desert_hills").biomeProperties(BiomeProperties.builder().waterColor("#1a7aa1").build()).build()); //test
+        biomes.add(BiomeConfig.builder().biomeId("minecraft:desert_hills").biomeProperties(BiomeProperties.builder().waterColor("#1a7aa1").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:wooded_hills").biomeProperties(BiomeProperties.builder().waterColor("#056bd1").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:taiga_hills").biomeProperties(BiomeProperties.builder().waterColor("#236583").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:mountain_edge").biomeProperties(BiomeProperties.builder().waterColor("#045cd5").build()).build());
@@ -97,10 +97,11 @@ public class Config {
         biomes.add(BiomeConfig.builder().biomeId("minecraft:bamboo_jungle_hills").biomeProperties(BiomeProperties.builder().waterColor("#1B9ED8").build()).build());
 
         /* NETHER BIOMES */
-        biomes.add(BiomeConfig.builder().biomeId("minecraft:soul_sand_valley").biomeProperties(BiomeProperties.builder().waterColor("#905957").build()).build());
-        biomes.add(BiomeConfig.builder().biomeId("minecraft:crimson_forest").biomeProperties(BiomeProperties.builder().waterColor("#905957").build()).build());
-        biomes.add(BiomeConfig.builder().biomeId("minecraft:warped_forest").biomeProperties(BiomeProperties.builder().waterColor("#905957").build()).build());
-        biomes.add(BiomeConfig.builder().biomeId("minecraft:basalt_deltas").biomeProperties(BiomeProperties.builder().waterColor("#905957").build()).build());
+        // these color values are unofficial
+        biomes.add(BiomeConfig.builder().biomeId("minecraft:soul_sand_valley").biomeProperties(BiomeProperties.builder().waterColor("#968989").build()).build());
+        biomes.add(BiomeConfig.builder().biomeId("minecraft:crimson_forest").biomeProperties(BiomeProperties.builder().waterColor("#91211b").build()).build());
+        biomes.add(BiomeConfig.builder().biomeId("minecraft:warped_forest").biomeProperties(BiomeProperties.builder().waterColor("#512450").build()).build());
+        biomes.add(BiomeConfig.builder().biomeId("minecraft:basalt_deltas").biomeProperties(BiomeProperties.builder().waterColor("#474656").build()).build());
     }
 
     public static void init(File configDir) throws IOException {
@@ -124,7 +125,7 @@ public class Config {
 
     public static boolean canChildBiomeInheritParentColors() { return config.childBiomesInheritParentColors; }
 
-    public static boolean allowVanillaBiomesOnly() { return config.vanillaBiomesOnly; }
+    public static boolean allowVanillaBiomesOnly() { return config.autoConfigureVanillaBiomesOnly; }
 
     public static BiomeConfig getBiomeFromBiomeConfig(Identifier targetBiome) {
         // check for targetBiome in config
