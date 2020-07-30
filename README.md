@@ -1,5 +1,5 @@
 # BedrockWaters
-BedrockWaters is a client-side mod which simply ports over the Minecraft Bedrock Edition exclusive feature of biome specific water colors in order to give each biome a more unique atmosphere. Its purpose is simply aesthetic and had no other features besides changing water colors (although it feels like a more significant change in-game). All changed biome water colors can be found on the Minecraft Wiki [here](https://minecraft.gamepedia.com/Water#Bedrock_Edition)
+BedrockWaters is a client-side mod which simply ports over the Minecraft Bedrock Edition exclusive feature of biome specific water colors in order to give each biome a more unique atmosphere. Its purpose is simply aesthetic and had no other features besides changing water colors (although it feels like a more significant change in-game). All changed biome water colors can be found on the Minecraft Wiki [here](https://minecraft.gamepedia.com/Water#Bedrock_Edition).
 
 ## Images
 ![Plains Biome](https://i.imgur.com/4QvV9L6.png)
