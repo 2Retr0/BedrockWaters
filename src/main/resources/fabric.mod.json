@@ -9,7 +9,9 @@
   ],
   "contributors": [],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/bedrockwaters"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/bedrockwaters",
+    "issues": "https://github.com/2Retr0/BedrockWaters/issues",
+    "sources": "https://github.com/2Retr0/BedrockWaters"
   },
   "license": "MIT",
   "icon": "assets/bedrockwaters/icon.png",
@@ -26,6 +28,6 @@
   ],
   "accessWidener": "bedrockwaters.accesswidener",
   "depends": {
-    "fabricloader": ">=0.8.7"
+    "fabricloader": ">=0.8.8"
   }
 }
