@@ -1,0 +1,7 @@
+accessWidener v1 named
+
+mutable field net/minecraft/world/biome/BiomeEffects waterColor I
+accessible field net/minecraft/world/biome/BiomeEffects waterColor I
+
+mutable field net/minecraft/world/biome/BiomeEffects waterFogColor I
+accessible field net/minecraft/world/biome/BiomeEffects waterFogColor I

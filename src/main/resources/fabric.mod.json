@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "bedrockwaters",
+  "version": "${version}",
+  "name": "BedrockWaters",
+  "description": "Ports over various biome water colors from Bedrock Edition",
+  "authors": [
+    "2Retr0"
+  ],
+  "contributors": [],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/bedrockwaters"
+  },
+  "license": "MIT",
+  "icon": "assets/bedrockwaters/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "retr0.bedrockwaters.BedrockWaters"
+    ],
+    "client": [],
+    "server": []
+  },
+  "mixins": [
+    "bedrockwaters.mixins.json"
+  ],
+  "accessWidener": "bedrockwaters.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.8.7"
+  }
+}
