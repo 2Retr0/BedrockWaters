@@ -4,7 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.biome.Biome;
+import org.apache.logging.log4j.Level;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -13,13 +17,13 @@ import java.util.List;
 public class Config {
     private static Config config;
 
-    private boolean childBiomesInheritParentColors = true;
-    private boolean autoConfigureVanillaBiomesOnly = true;
-    private List<BiomeConfig> biomes = new ArrayList<>();
+    private final boolean childBiomesInheritParentColors = true;
+    private final boolean autoConfigureVanillaBiomesOnly = false;
+    private final List<BiomeConfig> biomes = new ArrayList<>();
 
     private Config() {
         // add a default attribute element
-        biomes.add(BiomeConfig.builder().biomeId("DEFAULT").biomeProperties(BiomeProperties.builder().waterColor("#44AFF5").waterFogColor("#44AFF5").build()).build());
+        biomes.add(BiomeConfig.builder().biomeId("DEFAULT").biomeProperties(BiomeProperties.builder().waterColor("#44AFF5").build()).build());
 
         // add default config biomes sorted by rawID
         biomes.add(BiomeConfig.builder().biomeId("minecraft:ocean").biomeProperties(BiomeProperties.builder().waterColor("#1787D4").waterFogColor("#1165b0").build()).build());
@@ -97,7 +101,7 @@ public class Config {
         biomes.add(BiomeConfig.builder().biomeId("minecraft:bamboo_jungle_hills").biomeProperties(BiomeProperties.builder().waterColor("#1B9ED8").build()).build());
 
         /* NETHER BIOMES */
-        // these color values are unofficial
+        // these color values are unofficial!
         biomes.add(BiomeConfig.builder().biomeId("minecraft:soul_sand_valley").biomeProperties(BiomeProperties.builder().waterColor("#968989").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:crimson_forest").biomeProperties(BiomeProperties.builder().waterColor("#91211b").build()).build());
         biomes.add(BiomeConfig.builder().biomeId("minecraft:warped_forest").biomeProperties(BiomeProperties.builder().waterColor("#512450").build()).build());
@@ -105,16 +109,23 @@ public class Config {
     }
 
     public static void init(File configDir) throws IOException {
+        int biomesSize;
         config = new Config();
 
         // check for config directory
-        if(!configDir.exists()) configDir.mkdirs();
+        if (!configDir.exists()) configDir.mkdirs();
         File configFile = new File(configDir, "config.json");
 
-        if(configFile.exists()) {
-            try(Reader reader = new FileReader(configFile)) {
+        if (configFile.exists()) {
+            try (Reader reader = new FileReader(configFile)) {
                 config = new Gson().fromJson(reader, Config.class);
             }
+            biomesSize = config.biomes.size();
+
+            // remove any incorrectly formatted entries
+            config.biomes.removeIf(BiomeConfig -> BiomeConfig.biomeId == null || BiomeConfig.biomeProperties == null);
+            if (config.biomes.size() < biomesSize)
+                BedrockWaters.log(Level.WARN, "There are incorrectly formatted entries in the configuration file! Such entries have been skipped.");
         } else {
             try (JsonWriter writer = new JsonWriter(new FileWriter(configFile))) {
                 writer.setIndent("\t");
@@ -127,18 +138,18 @@ public class Config {
 
     public static boolean allowVanillaBiomesOnly() { return config.autoConfigureVanillaBiomesOnly; }
 
-    public static BiomeConfig getBiomeFromBiomeConfig(Identifier targetBiome) {
+    public static BiomeConfig getBiomeFromBiomeConfig(Biome targetBiome) {
         // check for targetBiome in config
-        for(BiomeConfig biomeConfig : config.biomes) {
-            if (targetBiome.equals(Identifier.tryParse(biomeConfig.biomeId)))
+        for (BiomeConfig biomeConfig : config.biomes) {
+            if (targetBiome.equals(Registry.BIOME.get(Identifier.tryParse(biomeConfig.biomeId))))
                 return biomeConfig;
         }
         return null;
     }
 
     public static BiomeConfig getDefaultBiomeConfig() {
-        for(BiomeConfig biomeConfig : config.biomes) {
-            if(biomeConfig.biomeId.equals("DEFAULT"))
+        for (BiomeConfig biomeConfig : config.biomes) {
+            if (biomeConfig.biomeId.toUpperCase().equals("DEFAULT"))
                 return biomeConfig;
         }
         return null;
@@ -160,7 +171,7 @@ public class Config {
                 this.waterColor = waterColor;
 
                 // if only waterColor is initialized set waterFogColor to waterColor
-                if(this.waterFogColor == null)
+                if (this.waterFogColor == null)
                     this.waterFogColor = waterColor;
 
                 return this;
