@@ -29,5 +29,11 @@
   "accessWidener": "bedrockwaters.accesswidener",
   "depends": {
     "fabricloader": ">=0.8.8"
+  },
+  "custom": {
+    "modupdater": {
+      "strategy": "curseforge",
+      "projectID": 396568
+    }
   }
 }
