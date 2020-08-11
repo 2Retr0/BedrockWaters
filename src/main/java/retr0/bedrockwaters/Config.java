@@ -5,8 +5,10 @@ import com.google.gson.stream.JsonWriter;
 import lombok.Builder;
 import lombok.Getter;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeSource;
 import org.apache.logging.log4j.Level;
 
 import java.io.*;
@@ -140,7 +142,7 @@ public class Config {
     public static BiomeConfig getBiomeFromBiomeConfig(Biome targetBiome) {
         // check for targetBiome in config
         for (BiomeConfig biomeConfig : config.biomes) {
-            if (targetBiome.equals(Registry.BIOME.get(Identifier.tryParse(biomeConfig.biomeId))))
+            if (targetBiome.equals(BuiltinRegistries.BIOME.get(Identifier.tryParse(biomeConfig.biomeId))))
                 return biomeConfig;
         }
         return null;

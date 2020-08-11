@@ -9,7 +9,7 @@ import retr0.bedrockwaters.BiomeExt;
 
 @Mixin(Biome.class)
 public abstract class BiomeMixin implements BiomeExt {
-    @Shadow @Final protected BiomeEffects effects;
+    @Shadow @Final private BiomeEffects effects;
 
     public void setWaterAttributes(int waterColor, int waterFogColor) {
         this.effects.waterColor = waterColor;
