@@ -6,9 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.BuiltinRegistries;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeSource;
 import org.apache.logging.log4j.Level;
 
 import java.io.*;
@@ -18,8 +16,10 @@ import java.util.List;
 public class Config {
     private static Config config;
 
+    // TODO: boolean values aren't being read properly?
     private final boolean childBiomesInheritParentColors = true;
     private final boolean autoConfigureVanillaBiomesOnly = false;
+    // private final boolean bedrockUnderwaterFogDistances = true;
     private final List<BiomeConfig> biomes = new ArrayList<>();
 
     private Config() {
@@ -138,6 +138,8 @@ public class Config {
     public static boolean canChildBiomeInheritParentColors() { return config.childBiomesInheritParentColors; }
 
     public static boolean allowVanillaBiomesOnly() { return config.autoConfigureVanillaBiomesOnly; }
+
+    //public static boolean useBedrockUnderwaterFogDistances() { return config.bedrockUnderwaterFogDistances; }
 
     public static BiomeConfig getBiomeFromBiomeConfig(Biome targetBiome) {
         // check for targetBiome in config
