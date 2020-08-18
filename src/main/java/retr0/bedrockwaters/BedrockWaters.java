@@ -1,7 +1,10 @@
 package retr0.bedrockwaters;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.BuiltinRegistries;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -21,6 +24,16 @@ public class BedrockWaters implements ModInitializer {
     @Override
     public void onInitialize() {
         log(Level.INFO, "BedrockWaters initialized!");
+
+        // TODO: Lower water sprite opacity
+        final Identifier bedrockWaterStillSpriteId = new Identifier(MOD_ID, "block/water_still");
+        final Identifier bedrockWaterFlowSpriteId = new Identifier(MOD_ID, "block/water_flow");
+
+        // add Bedrock Edition water sprites to the block atlas
+        ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEX).register((atlasTexture, registry) -> {
+            registry.register(bedrockWaterStillSpriteId);
+            registry.register(bedrockWaterFlowSpriteId);
+        });
 
         try {
             Config.init(new File("./config/"+MOD_ID+"/"));
