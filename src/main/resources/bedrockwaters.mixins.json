@@ -4,7 +4,10 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [],
   "client": [
-    "BiomeMixin"
+    "BackgroundRendererMixin",
+    "BiomeMixin",
+    "BiomeEffectsMixin",
+    "FluidRendererMixin"
   ],
   "server": [],
   "injectors": {
