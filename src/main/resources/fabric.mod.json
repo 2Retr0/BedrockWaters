@@ -3,7 +3,7 @@
   "id": "bedrockwaters",
   "version": "${version}",
   "name": "BedrockWaters",
-  "description": "Ports over various biome water colors from Bedrock Edition",
+  "description": "Ports over various biome water properties from Bedrock Edition",
   "authors": [
     "2Retr0"
   ],
@@ -26,7 +26,6 @@
   "mixins": [
     "bedrockwaters.mixins.json"
   ],
-  "accessWidener": "bedrockwaters.accesswidener",
   "depends": {
     "fabricloader": ">=0.9.1"
   },
