@@ -11,10 +11,6 @@ archivesBaseName = project.archives_base_name
 version = "${project.mod_version}+${project.minecraft_version}"
 group = project.maven_group
 
-minecraft {
-	accessWidener = file("src/main/resources/bedrockwaters.accesswidener")
-}
-
 dependencies {
 	//to change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
