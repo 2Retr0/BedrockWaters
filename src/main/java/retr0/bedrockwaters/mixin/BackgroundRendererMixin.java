@@ -25,7 +25,7 @@ public abstract class BackgroundRendererMixin {
     private static final float SNOWY_BEACH_BIOME_FOG_DISTANCE = getModifiedFogModeEXP2Distance(50);
     private static final float OCEAN_BIOME_FOG_DISTANCE = getModifiedFogModeEXP2Distance(60);
 
-    private static final float TRANSITION_TIME_MS = 5000.0f; // five seconds is also the underwater fog color transition time
+    private static final float TRANSITION_TIME_MS = 5000.0f; // five seconds is the underwater fog color transition time
 
     private static boolean transitioning = false;
     private static float waterFogDistance = DEFAULT_FOG_DISTANCE;
@@ -70,12 +70,17 @@ public abstract class BackgroundRendererMixin {
             }
 
             float time = MathHelper.clamp((float) (Util.getMeasuringTimeMs() - startingTime) / TRANSITION_TIME_MS, 0.0f, 1.0f);
-            waterFogDistance = MathHelper.lerp(time, startingFogDistance, nextWaterFogDistance);
+            waterFogDistance = MathHelper.lerp(easeInOut(time), startingFogDistance, nextWaterFogDistance);
         } else {
             transitioning = false;
         }
 
         RenderSystem.fogDensity(waterFogDistance - (clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03F));
+    }
+
+    // smooth animation for water fog distance transition
+    private static float easeInOut(float t) {
+        return MathHelper.lerp(t, t * t, 2 * t - (t * t));
     }
 
     private static float getModifiedFogModeEXP2Distance(int distance) {
