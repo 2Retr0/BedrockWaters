@@ -24,10 +24,12 @@ public abstract class FluidRendererMixin {
     private final Identifier bedrockWaterFlowSpriteId = new Identifier(MOD_ID, "block/water_flow");
 
     @Inject(method = "onResourceReload()V", at = @At("TAIL"))
-    protected void tonResourceReload(CallbackInfo ci) {
-        final Function<Identifier, Sprite> atlas = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+    private void onResourceReload(CallbackInfo ci) {
+        final Function<Identifier, Sprite> atlas = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 
         this.waterSprites[0] = atlas.apply(bedrockWaterStillSpriteId);
         this.waterSprites[1] = atlas.apply(bedrockWaterFlowSpriteId);
+
+        //System.out.println(MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getSprite().toString());
     }
 }
