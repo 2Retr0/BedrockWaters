@@ -7,7 +7,9 @@
   "authors": [
     "2Retr0"
   ],
-  "contributors": [],
+  "contributors": [
+    "Afrocntrik"
+  ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/bedrockwaters",
     "issues": "https://github.com/2Retr0/BedrockWaters/issues",
@@ -19,20 +21,15 @@
   "entrypoints": {
     "main": [
       "retr0.bedrockwaters.BedrockWaters"
-    ],
-    "client": [],
-    "server": []
+    ]
   },
   "mixins": [
     "bedrockwaters.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.9.1"
-  },
-  "custom": {
-    "modupdater": {
-      "strategy": "curseforge",
-      "projectID": 396568
-    }
+    "fabricloader": ">=0.11.6",
+    "minecraft": ">=1.17",
+    "fabric-resource-loader-v0": ">=0.4.7",
+    "java": ">=16"
   }
 }
