@@ -1,16 +1,14 @@
 {
   "required": true,
   "package": "retr0.bedrockwaters.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
     "BiomeMixin",
     "BiomeEffectsMixin"
   ],
   "client": [
-    "BackgroundRendererMixin",
-    "FluidRendererMixin"
+    "BackgroundRendererMixin"
   ],
-  "server": [],
   "injectors": {
     "defaultRequire": 1
   }
