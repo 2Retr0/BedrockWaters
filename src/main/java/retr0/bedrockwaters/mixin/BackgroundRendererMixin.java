@@ -4,14 +4,20 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import retr0.bedrockwaters.WaterPropertiesReplacer;
 
 @Mixin(BackgroundRenderer.class)
 public abstract class BackgroundRendererMixin {
@@ -29,48 +35,62 @@ public abstract class BackgroundRendererMixin {
 
     private static boolean transitioning = false;
     private static float waterFogDistance = DEFAULT_FOG_DISTANCE;
-    private static ClientPlayerEntity clientPlayerEntity;
+    private static Entity entity;
+    private static Identifier biomeId;
     private static Biome biome;
     private static float startingFogDistance;
     private static float startingNextWaterFogDistance;
     private static long startingTime;
 
-    @Inject(method = "applyFog(Lnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/BackgroundRenderer$FogType;FZ)V",
-            at = @At(
-                value   = "INVOKE",
-                target  = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderFogStart(F)V",
-                ordinal = 1),
-            locals = LocalCapture.CAPTURE_FAILEXCEPTION)
-    private static void onApplyFogAboveWater(Camera camera,
-                                             BackgroundRenderer.FogType fogType,
-                                             float viewDistance,
-                                             boolean thickFog,
-                                             CallbackInfo ci)
-    {
-        clientPlayerEntity = (ClientPlayerEntity) camera.getFocusedEntity();
-        biome              = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
-        waterFogDistance   = getWaterFogDistance(biome);
+    @ModifyVariable(
+            method = "render(Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/world/ClientWorld;IF)V",
+            at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/biome/Biome;getWaterFogColor()I"),
+            ordinal = 1, index = 9
+    )
+    private static int modifyWaterFogColor(int original) {
+        // TODO: initially water fog color is set to default upon loading a world?
+        if (biome == null || biomeId == null) return original;
+
+        return WaterPropertiesReplacer.getBiomeWaterProperties(biome, biomeId, true);
     }
 
 
 
-    @Inject(method = "applyFog(Lnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/BackgroundRenderer$FogType;FZ)V",
-            at = @At(
-                value   = "INVOKE",
-                target  = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderFogEnd(F)V",
-                ordinal = 0,
-                shift   = At.Shift.AFTER),
-            locals = LocalCapture.CAPTURE_FAILSOFT)
-    private static void onApplyFogUnderWater(Camera camera,
-                                             BackgroundRenderer.FogType fogType,
-                                             float viewDistance,
-                                             boolean thickFog,
-                                             CallbackInfo ci)
-    {
-        clientPlayerEntity         = (ClientPlayerEntity) camera.getFocusedEntity();
-        biome                      = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
-        float nextWaterFogDistance = getWaterFogDistance(biome);
+    @Inject(
+        method = "applyFog(Lnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/BackgroundRenderer$FogType;FZ)V",
+        at = @At(
+            value   = "INVOKE",
+            target  = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderFogEnd(F)V",
+            ordinal = 0,
+            shift   = At.Shift.AFTER
+        ),
+        cancellable = true
+    )
+    private static void onApplyFogUnderWater(
+        Camera camera,
+        BackgroundRenderer.FogType fogType,
+        float viewDistance,
+        boolean thickFog,
+        CallbackInfo ci
+    ) {
+        /* Cancel if the entity is not a LivingEntity or if the entity has the blindness effect.
+         * There is an in-game oversight(?) which allows normal visibility underwater even with the blindness effect.
+         * Shall leave this issue be for now.
+         */
+        if (!(entity instanceof LivingEntity) || ((LivingEntity)entity).hasStatusEffect(StatusEffects.BLINDNESS)) ci.cancel();
 
+        entity                           = camera.getFocusedEntity();
+        biome                            = entity.world.getBiome(entity.getBlockPos());
+        biomeId                          = entity.world.getRegistryManager().get(Registry.BIOME_KEY).getId(biome);
+        float nextWaterFogDistance       = getWaterFogDistance(biome);
+        float playerUnderwaterVisibility = 0;
+
+        // Vanilla has a slower, more subtle underwater visibility adjustment system. We will incorporate this into our new
+        // visibility calculations if the entity is a ClientPlayerEntity.
+        if (entity instanceof ClientPlayerEntity)
+            playerUnderwaterVisibility = ((ClientPlayerEntity)entity).getUnderwaterVisibility() * ((ClientPlayerEntity)entity).getUnderwaterVisibility() * 0.03F;
+
+        // Underwater visibility calculations.
         if (MathHelper.abs(waterFogDistance - nextWaterFogDistance) > 0.0002) {
             // If fog distance is not transitioning or if the fog distance needs to re-transition.
             if (!transitioning || startingNextWaterFogDistance != nextWaterFogDistance) {
@@ -87,7 +107,33 @@ public abstract class BackgroundRendererMixin {
             transitioning    = false;
         }
 
-        RenderSystem.setShaderFogEnd(waterFogDistance - (clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03F));
+        RenderSystem.setShaderFogEnd(waterFogDistance - playerUnderwaterVisibility);
+    }
+
+
+
+    @Inject(
+        method = "applyFog(Lnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/BackgroundRenderer$FogType;FZ)V",
+        at = @At(
+            value   = "INVOKE",
+            target  = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderFogEnd(F)V",
+            ordinal = 1,
+            shift   = At.Shift.AFTER
+        )
+    )
+    private static void onApplyFogAboveWater(
+        Camera camera,
+        BackgroundRenderer.FogType fogType,
+        float viewDistance,
+        boolean thickFog,
+        CallbackInfo ci
+    ) {
+        entity = camera.getFocusedEntity();
+        if (entity instanceof LivingEntity) {
+            biome            = entity.world.getBiome(entity.getBlockPos());
+            biomeId          = entity.world.getRegistryManager().get(Registry.BIOME_KEY).getId(biome);
+            waterFogDistance = getWaterFogDistance(biome);
+        }
     }
 
 
@@ -99,6 +145,7 @@ public abstract class BackgroundRendererMixin {
 
 
 
+    // Leaving this be just in case.
     @Deprecated
     private static float getModifiedFogModeEXP2Distance(int distance) {
         // for information on the 'glFogf' OpenGL function: https://docs.microsoft.com/en-us/windows/win32/opengl/glfogf
