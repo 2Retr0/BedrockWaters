@@ -1,7 +1,6 @@
 package retr0.bedrockwaters;
 
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.biome.Biome;
 
 import java.util.Map;
@@ -10,16 +9,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // Long lost code: https://pastebin.com/iQyX4KRc
-@SuppressWarnings("ConstantConditions")
 public class WaterPropertiesReplacer {
     //================================================================================
     // Biome Modification
     //================================================================================
-    public static void setBiomeWaterProperties(Biome targetBiome) {
+    public static int getBiomeWaterProperties(Biome targetBiome, Identifier targetBiomeId, boolean getWaterFogColor) {
         int waterColor;
         int waterFogColor;
 
-        Identifier targetBiomeId              = BuiltinRegistries.BIOME.getId(targetBiome);
+        //Identifier targetBiomeId = BuiltinRegistries.BIOME.getId(targetBiome);
         BiomeProperties targetBiomeProperties = BIOME_WATER_COLORS.get(targetBiomeId.toString());
 
         // If targetBiome has an entry.
@@ -28,7 +26,8 @@ public class WaterPropertiesReplacer {
             waterColor    = hexStringToInt(targetBiomeProperties.waterColor);
             waterFogColor = hexStringToInt(targetBiomeProperties.waterFogColor);
 
-            ((IBiome)(Object) targetBiome).setWaterAttributes(waterColor, waterFogColor);
+            return waterColor;
+            //((IBiome)(Object) targetBiome).setWaterAttributes(waterColor, waterFogColor);
         }
         // Otherwise, if the biome is a modded biome and the biomes water color is the vanilla water color OR
         // the biome is a vanilla biome, automatically determine what the corresponding water color should be.
@@ -38,8 +37,12 @@ public class WaterPropertiesReplacer {
             waterColor    = hexStringToInt(getDefaultModifiedWaterAttributes(targetBiome, false));
             waterFogColor = hexStringToInt(getDefaultModifiedWaterAttributes(targetBiome, true));
 
-            ((IBiome)(Object) targetBiome).setWaterAttributes(waterColor, waterFogColor);
+            return getWaterFogColor ? waterFogColor : waterColor;
+            //((IBiome)(Object) targetBiome).setWaterAttributes(waterColor, waterFogColor);
         }
+
+        // If all else fails (though it shouldn't), use default colors.
+        return 4501493;
     }
 
 
@@ -203,7 +206,7 @@ public class WaterPropertiesReplacer {
         }
 
         // If all else fails, use default colors.
-        return "44AFF5";
+        return "#44AFF5";
     }
 
 
