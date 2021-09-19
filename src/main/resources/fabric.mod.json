@@ -19,7 +19,7 @@
   "icon": "assets/bedrockwaters/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
+    "client": [
       "retr0.bedrockwaters.BedrockWaters"
     ]
   },
