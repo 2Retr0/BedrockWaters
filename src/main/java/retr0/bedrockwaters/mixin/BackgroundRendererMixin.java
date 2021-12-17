@@ -7,10 +7,8 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,7 +34,6 @@ public abstract class BackgroundRendererMixin {
     private static boolean transitioning = false;
     private static float waterFogDistance = DEFAULT_FOG_DISTANCE;
     private static Entity entity;
-    private static Identifier biomeId;
     private static Biome biome;
     private static float startingFogDistance;
     private static float startingNextWaterFogDistance;
@@ -48,10 +45,9 @@ public abstract class BackgroundRendererMixin {
             ordinal = 1, index = 9
     )
     private static int modifyWaterFogColor(int original) {
-        // TODO: initially water fog color is set to default upon loading a world?
-        if (biome == null || biomeId == null) return original;
+        if (biome == null) return original;
 
-        return WaterPropertiesReplacer.getBiomeWaterProperties(biome, biomeId, true);
+        return WaterPropertiesReplacer.getBiomeWaterProperties(biome, true);
     }
 
 
@@ -81,7 +77,6 @@ public abstract class BackgroundRendererMixin {
 
         entity                           = camera.getFocusedEntity();
         biome                            = entity.world.getBiome(entity.getBlockPos());
-        biomeId                          = entity.world.getRegistryManager().get(Registry.BIOME_KEY).getId(biome);
         float nextWaterFogDistance       = getWaterFogDistance(biome);
         float playerUnderwaterVisibility = 0;
 
@@ -131,7 +126,6 @@ public abstract class BackgroundRendererMixin {
         entity = camera.getFocusedEntity();
         if (entity instanceof LivingEntity) {
             biome            = entity.world.getBiome(entity.getBlockPos());
-            biomeId          = entity.world.getRegistryManager().get(Registry.BIOME_KEY).getId(biome);
             waterFogDistance = getWaterFogDistance(biome);
         }
     }
@@ -141,15 +135,6 @@ public abstract class BackgroundRendererMixin {
     // Smooth animation for water fog distance transition.
     private static float easeInOut(float t) {
         return MathHelper.lerp(t, t * t, 2 * t - (t * t));
-    }
-
-
-
-    // Leaving this be just in case.
-    @Deprecated
-    private static float getModifiedFogModeEXP2Distance(int distance) {
-        // for information on the 'glFogf' OpenGL function: https://docs.microsoft.com/en-us/windows/win32/opengl/glfogf
-        return (MathHelper.sqrt((float) Math.log(distance))/distance) + 0.03f;
     }
 
 
