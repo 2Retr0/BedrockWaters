@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import retr0.bedrockwaters.mixin.BiomeColorsAccessor;
 
 public class BedrockWaters implements ClientModInitializer {
     public static Logger LOGGER         = LogManager.getLogger();
@@ -24,6 +25,8 @@ public class BedrockWaters implements ClientModInitializer {
                 .map(container -> ResourceManagerHelper.registerBuiltinResourcePack(new Identifier(MOD_ID, "resources"),
                         container, ResourcePackActivationType.DEFAULT_ENABLED))
                 .filter(success -> !success).ifPresent(success -> LOGGER.warn("Could not register built-in resource pack."));
+
+        BiomeColorsAccessor.setWaterColor((biome, x, z) -> WaterPropertiesReplacer.getBiomeWaterProperties(biome, false));
     }
 
 
