@@ -27,9 +27,10 @@
     "bedrockwaters.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.11.6",
-    "minecraft": ">=1.17",
-    "fabric-resource-loader-v0": ">=0.4.7",
-    "java": ">=16"
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.18.x",
+    "java": ">=17",
+    "fabric-resource-loader-v0": "*"
   }
 }
