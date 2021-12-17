@@ -1,6 +1,8 @@
 package retr0.bedrockwaters;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 import java.util.Map;
@@ -13,11 +15,14 @@ public class WaterPropertiesReplacer {
     //================================================================================
     // Biome Modification
     //================================================================================
-    public static int getBiomeWaterProperties(Biome targetBiome, Identifier targetBiomeId, boolean getWaterFogColor) {
+    @SuppressWarnings("ConstantConditions")
+    public static int getBiomeWaterProperties(Biome targetBiome, boolean getWaterFogColor) {
         int waterColor;
         int waterFogColor;
 
-        //Identifier targetBiomeId = BuiltinRegistries.BIOME.getId(targetBiome);
+        // Getting the target biome ID here so that WATER_COLOR in BiomeColors.class can be set through accessor.
+        Identifier targetBiomeId              = MinecraftClient.getInstance().player.world
+                                                .getRegistryManager().get(Registry.BIOME_KEY).getId(targetBiome);
         BiomeProperties targetBiomeProperties = BIOME_WATER_COLORS.get(targetBiomeId.toString());
 
         // If targetBiome has an entry.
@@ -26,7 +31,7 @@ public class WaterPropertiesReplacer {
             waterColor    = hexStringToInt(targetBiomeProperties.waterColor);
             waterFogColor = hexStringToInt(targetBiomeProperties.waterFogColor);
 
-            return waterColor;
+            return getWaterFogColor ? waterFogColor : waterColor;
             //((IBiome)(Object) targetBiome).setWaterAttributes(waterColor, waterFogColor);
         }
         // Otherwise, if the biome is a modded biome and the biomes water color is the vanilla water color OR
@@ -48,7 +53,7 @@ public class WaterPropertiesReplacer {
 
 
     private static int hexStringToInt(String hexString) {
-        // remove any extra formatting
+        // Remove any extra formatting (yeah having this method is stupid).
         if (hexString.charAt(0) == '#')
             hexString = hexString.replace("#", "");
         else if (hexString.startsWith("0x"))
@@ -117,25 +122,23 @@ public class WaterPropertiesReplacer {
                         return waterColorOf.apply("minecraft:dark_forest");
                     if (varyWaterColor)
                         return biomeName.contains("hill") ? waterColorOf.apply("minecraft:forest") : waterColorOf.apply("minecraft:flower_forest");
-                    if (biomeName.contains("hill"))
-                        return waterColorOf.apply("minecraft:wooded_hills");
-                    return waterColorOf.apply("minecraft:birch_forest_hills");
+                    return waterColorOf.apply("minecraft:old_growth_birch_forest");
                 }
 
             /* Other special biome cases. */
             case MUSHROOM:
-                return biomeName.contains("beach") || biomeName.contains("shore") ? waterColorOf.apply("minecraft:mushroom_field_shore") : waterColorOf.apply("minecraft:mushroom_fields");
+                return waterColorOf.apply("minecraft:mushroom_fields");
             case SWAMP:
-                return biomeName.contains("hill") ? waterColorOf.apply("minecraft:swamp_hills") : waterColorOf.apply("minecraft:swamp");
+                return waterColorOf.apply("minecraft:swamp");
             case JUNGLE:
-                return biomeName.contains("hill") ? waterColorOf.apply("minecraft:jungle_hills") : waterColorOf.apply("minecraft:jungle");
+                return waterColorOf.apply("minecraft:jungle");
             case SAVANNA:
                 return biomeName.contains("plateau") ? waterColorOf.apply("minecraft:savanna_plateau") : waterColorOf.apply("minecraft:savanna");
             case MESA:
                 if (varyWaterColor)
                     return waterColorOf.apply("minecraft:eroded_badlands");
-                else if (biomeName.contains("plateau"))
-                    return waterColorOf.apply("minecraft:badlands_plateau");
+                else if (biomeName.contains("plateau") || biomeName.contains("wooded"))
+                    return waterColorOf.apply("minecraft:wooded_badlands");
                 return waterColorOf.apply("minecraft:badlands");
             case NETHER:
                 return varyWaterColor ? waterColorOf.apply("minecraft:warped_forest") : waterColorOf.apply("minecraft:nether_wastes");
@@ -150,41 +153,37 @@ public class WaterPropertiesReplacer {
             // For all other cases...
             // (this should include biomes that belong in the TAIGA, BEACH, RIVER, EXTREME_HILLS, and ICY categories)
             if (targetBiome.getTemperature() < 0.0f) {
-                return biomeName.contains("hill") ? waterColorOf.apply("minecraft:snowy_taiga_hills") : waterColorOf.apply("minecraft:snowy_taiga");
+                return waterColorOf.apply("minecraft:snowy_taiga");
             }
             else if (targetBiome.getTemperature() < 0.2f) {
                 if (biomeName.contains("river") || biomeName.contains("lake"))
                     return waterColorOf.apply("minecraft:frozen_river");
                 else if (biomeName.contains("beach") || biomeName.contains("shore"))
                     return waterColorOf.apply("minecraft:snowy_beach");
-                return waterColorOf.apply("minecraft:snowy_tundra");
+                return waterColorOf.apply("minecraft:snowy_plains");
             }
             else if (targetBiome.getTemperature() < 0.25f) {
-                if (biomeName.contains("hill"))
-                    return waterColorOf.apply("minecraft:wooded_hills");
                 if (biomeName.contains("wood")) // FOR MOUNTAINOUS WOODED BIOMES
-                    return waterColorOf.apply("minecraft:wooded_mountains");
+                    return waterColorOf.apply("minecraft:windswept_forest");
                 if (biomeName.contains("beach") || biomeName.contains("shore"))
-                    return waterColorOf.apply("minecraft:stone_shore");
-                return waterColorOf.apply("minecraft:mountains");
+                    return waterColorOf.apply("minecraft:stony_shore");
+                return waterColorOf.apply("minecraft:windswept_hills");
             }
             else if (targetBiome.getTemperature() < 0.3f) {
-                if (biomeName.contains("mountain"))
-                    return waterColorOf.apply("minecraft:taiga_mountains");
-                if (biomeName.contains("hill"))
-                    return waterColorOf.apply("minecraft:taiga_hills");
+                if (biomeName.contains("mountain") || biomeName.contains("windswept"))
+                    return waterColorOf.apply("minecraft:snowy_slopes");
                 if (biomeName.contains("giant")) // FOR GIANT BIOMES
-                    return waterColorOf.apply("minecraft:giant_spruce_taiga");
+                    return waterColorOf.apply("minecraft:old_growth_spruce_taiga");
                 return waterColorOf.apply("minecraft:taiga");
             }
             else if (targetBiome.getTemperature() < 0.5f) {
-                return biomeName.contains("hill") ? waterColorOf.apply("minecraft:giant_tree_taiga_hills") : waterColorOf.apply("minecraft:giant_tree_taiga");
+                return waterColorOf.apply("minecraft:old_growth_pine_taiga");
             }
             else if (targetBiome.getTemperature() < 0.6f) {
                 return waterColorOf.apply("minecraft:river");
             }
             else if (targetBiome.getTemperature() < 0.7f) {
-                return biomeName.contains("hill") ? waterColorOf.apply("minecraft:birch_forest_hills") : waterColorOf.apply("minecraft:birch_forest");
+                return waterColorOf.apply("minecraft:birch_forest");
             }
             else if (targetBiome.getTemperature() < 0.8f) {
                 return varyWaterColor ? waterColorOf.apply("minecraft:dark_forest") : waterColorOf.apply("minecraft:forest");
@@ -194,14 +193,14 @@ public class WaterPropertiesReplacer {
             }
             else if (targetBiome.getTemperature() < 1.0f) {
                 if (biomeName.contains("jungle") || biomeName.contains("rain"))
-                    return biomeName.contains("hill") ? waterColorOf.apply("minecraft:jungle_hills") : waterColorOf.apply("minecraft:jungle");
-                return waterColorOf.apply("minecraft:jungle_edge");
+                    return waterColorOf.apply("minecraft:jungle");
+                return waterColorOf.apply("minecraft:sparse_jungle");
             }
             else if (targetBiome.getTemperature() < 2.0f) {
                 return biomeName.contains("hill") ? waterColorOf.apply("minecraft:savanna_plateau") : waterColorOf.apply("minecraft:savanna");
             }
             else if (targetBiome.getTemperature() >= 2.0f) {
-                return biomeName.contains("hill") ? waterColorOf.apply("minecraft:desert_hills") : waterColorOf.apply("minecraft:desert");
+                return waterColorOf.apply("minecraft:desert");
             }
         }
 
@@ -233,76 +232,90 @@ public class WaterPropertiesReplacer {
         { "minecraft:ocean",                       new BiomeProperties("#1787D4", "#1165b0") },
         { "minecraft:plains",                      new BiomeProperties("#44AFF5") },
         { "minecraft:desert",                      new BiomeProperties("#32A598") },
-        { "minecraft:mountains",                   new BiomeProperties("#007BF7") },
+        { "minecraft:windswept_hills",             new BiomeProperties("#007BF7") },
         { "minecraft:forest",                      new BiomeProperties("#1E97F2") },
         { "minecraft:taiga",                       new BiomeProperties("#287082") },
         { "minecraft:swamp",                       new BiomeProperties("#4c6559") },
         { "minecraft:river",                       new BiomeProperties("#0084FF") },
         { "minecraft:nether_wastes",               new BiomeProperties("#905957") },
-        { "minecraft:the_end",                     new BiomeProperties("#62529e") },
+        { "minecraft:the_end",                     new BiomeProperties("#62529E") },
         { "minecraft:frozen_ocean",                new BiomeProperties("#2570B5", "#174985") },
         { "minecraft:frozen_river",                new BiomeProperties("#185390") },
-        { "minecraft:snowy_tundra",                new BiomeProperties("#14559b") },
-        { "minecraft:snowy_mountains",             new BiomeProperties("#1156a7") },
-        { "minecraft:mushroom_fields",             new BiomeProperties("#8a8997") },
-        { "minecraft:mushroom_field_shore",        new BiomeProperties("#818193") },
-        { "minecraft:beach",                       new BiomeProperties("#157cab") },
-        { "minecraft:desert_hills",                new BiomeProperties("#1a7aa1") },
-        { "minecraft:wooded_hills",                new BiomeProperties("#056bd1") },
-        { "minecraft:taiga_hills",                 new BiomeProperties("#236583") },
-        { "minecraft:mountain_edge",               new BiomeProperties("#045cd5") },
+        { "minecraft:snowy_plains",                new BiomeProperties("#14559B") },
+        //{ "minecraft:snowy_mountains",             new BiomeProperties("#1156a7") },
+        { "minecraft:mushroom_fields",             new BiomeProperties("#8A8997") },
+        //{ "minecraft:mushroom_field_shore",        new BiomeProperties("#818193") },
+        { "minecraft:beach",                       new BiomeProperties("#157CAB") },
+        //{ "minecraft:desert_hills",                new BiomeProperties("#1a7aa1") },
+        //{ "minecraft:wooded_hills",                new BiomeProperties("#056bd1") },
+        //{ "minecraft:taiga_hills",                 new BiomeProperties("#236583") },
+        //{ "minecraft:mountain_edge",               new BiomeProperties("#045cd5") },
         { "minecraft:jungle",                      new BiomeProperties("#14A2C5") },
-        { "minecraft:jungle_hills",                new BiomeProperties("#1B9ED8") },
-        { "minecraft:jungle_edge",                 new BiomeProperties("#0D8AE3") },
-        { "minecraft:deep_ocean",                  new BiomeProperties("#1787D4", "#1463a5") },
-        { "minecraft:stone_shore",                 new BiomeProperties("#0d67bb") },
-        { "minecraft:snowy_beach",                 new BiomeProperties("#1463a5") },
-        { "minecraft:birch_forest",                new BiomeProperties("#0677ce") },
-        { "minecraft:birch_forest_hills",          new BiomeProperties("#0a74c4") },
+        //{ "minecraft:jungle_hills",                new BiomeProperties("#1B9ED8") },
+        { "minecraft:sparse_jungle",               new BiomeProperties("#0D8AE3") },
+        { "minecraft:deep_ocean",                  new BiomeProperties("#1787D4", "#1463A5") },
+        { "minecraft:stony_shore",                 new BiomeProperties("#0D67BB") },
+        { "minecraft:snowy_beach",                 new BiomeProperties("#1463A5") },
+        { "minecraft:birch_forest",                new BiomeProperties("#0677CE") },
+        { "minecraft:old_growth_birch_forest",     new BiomeProperties("#0677CE") },
         { "minecraft:dark_forest",                 new BiomeProperties("#3B6CD1") },
-        { "minecraft:snowy_taiga",                 new BiomeProperties("#205e83") },
-        { "minecraft:snowy_taiga_hills",           new BiomeProperties("#245b78") },
-        { "minecraft:giant_tree_taiga",            new BiomeProperties("#2d6d77") },
-        { "minecraft:giant_tree_taiga_hills",      new BiomeProperties("#2d6d77") },
-        { "minecraft:wooded_mountains",            new BiomeProperties("#0E63AB") },
+        { "minecraft:snowy_taiga",                 new BiomeProperties("#205E83") },
+        //{ "minecraft:snowy_taiga_hills",           new BiomeProperties("#245b78") },
+        { "minecraft:old_growth_pine_taiga",       new BiomeProperties("#2D6D77") },
+        //{ "minecraft:giant_tree_taiga_hills",      new BiomeProperties("#2d6d77") },
+        { "minecraft:windswept_forest",            new BiomeProperties("#0E63AB") },
         { "minecraft:savanna",                     new BiomeProperties("#2C8B9C") },
         { "minecraft:savanna_plateau",             new BiomeProperties("#2590A8") },
         { "minecraft:badlands",                    new BiomeProperties("#4E7F81") },
-        { "minecraft:wooded_badlands_plateau",     new BiomeProperties("#497F99") },
-        { "minecraft:badlands_plateau",            new BiomeProperties("#55809E") },
+        { "minecraft:wooded_badlands",             new BiomeProperties("#497F99") },
+        //{ "minecraft:badlands_plateau",            new BiomeProperties("#55809E") },
 
         /* THE END BIOMES */
-        { "minecraft:small_end_islands",           new BiomeProperties("#62529e") },
-        { "minecraft:end_midlands",                new BiomeProperties("#62529e") },
-        { "minecraft:end_highlands",               new BiomeProperties("#62529e") },
-        { "minecraft:end_barrens",                 new BiomeProperties("#62529e") },
+        { "minecraft:small_end_islands",           new BiomeProperties("#62529E") },
+        { "minecraft:end_midlands",                new BiomeProperties("#62529E") },
+        { "minecraft:end_highlands",               new BiomeProperties("#62529E") },
+        { "minecraft:end_barrens",                 new BiomeProperties("#62529E") },
 
         /* 1.13 OCEAN BIOMES */
-        { "minecraft:warm_ocean",                  new BiomeProperties("#02B0E5", "#0289d5") },
-        { "minecraft:lukewarm_ocean",              new BiomeProperties("#0D96DB", "#0a74c4") },
-        { "minecraft:cold_ocean",                  new BiomeProperties("#2080C9", "#14559b") },
-        { "minecraft:deep_warm_ocean",             new BiomeProperties("#02B0E5", "#0686ca") },
-        { "minecraft:deep_lukewarm_ocean",         new BiomeProperties("#0D96DB", "#0e72b9") },
+        { "minecraft:warm_ocean",                  new BiomeProperties("#02B0E5", "#0289D5") },
+        { "minecraft:lukewarm_ocean",              new BiomeProperties("#0D96DB", "#0A74C4") },
+        { "minecraft:cold_ocean",                  new BiomeProperties("#2080C9", "#14559B") },
+        { "minecraft:deep_warm_ocean",             new BiomeProperties("#02B0E5", "#0686CA") },
+        { "minecraft:deep_lukewarm_ocean",         new BiomeProperties("#0D96DB", "#0E72b9") },
         { "minecraft:deep_cold_ocean",             new BiomeProperties("#2080C9", "#185390") },
-        { "minecraft:deep_frozen_ocean",           new BiomeProperties("#2570B5", "#1a4879") },
+        { "minecraft:deep_frozen_ocean",           new BiomeProperties("#2570B5", "#1A4879") },
 
         { "minecraft:sunflower_plains",            new BiomeProperties("#44AFF5") },
-        { "minecraft:gravelly_mountains",          new BiomeProperties("#0E63AB") },
+        { "minecraft:windswept_gravelly_hills",    new BiomeProperties("#0E63AB") },
         { "minecraft:flower_forest",               new BiomeProperties("#20A3CC") },
-        { "minecraft:taiga_mountains",             new BiomeProperties("#1E6B82") },
-        { "minecraft:swamp_hills",                 new BiomeProperties("#4c6156") },
-        { "minecraft:ice_spikes",                  new BiomeProperties("#14559b") },
-        { "minecraft:modified_jungle",             new BiomeProperties("#1B9ED8") },
-        { "minecraft:modified_jungle_edge",        new BiomeProperties("#0D8AE3") },
-        { "minecraft:snowy_taiga_mountains",       new BiomeProperties("#205e83") },
-        { "minecraft:giant_spruce_taiga",          new BiomeProperties("#2d6d77") },
-        { "minecraft:giant_spruce_taiga_hills",    new BiomeProperties("#286378") },
-        { "minecraft:modified_gravelly_mountains", new BiomeProperties("#0E63AB") },
-        { "minecraft:shattered_savanna",           new BiomeProperties("#2590A8") },
+        //{ "minecraft:taiga_mountains",             new BiomeProperties("#1E6B82") },
+        //{ "minecraft:swamp_hills",                 new BiomeProperties("#4c6156") },
+        { "minecraft:ice_spikes",                  new BiomeProperties("#14559B") },
+        //{ "minecraft:modified_jungle",             new BiomeProperties("#1B9ED8") },
+        //{ "minecraft:modified_jungle_edge",        new BiomeProperties("#0D8AE3") },
+        //{ "minecraft:snowy_taiga_mountains",       new BiomeProperties("#205e83") },
+        { "minecraft:old_growth_spruce_taiga",     new BiomeProperties("#2D6D77") },
+        //{ "minecraft:giant_spruce_taiga_hills",    new BiomeProperties("#286378") },
+        //{ "minecraft:modified_gravelly_mountains", new BiomeProperties("#0E63AB") },
+        { "minecraft:windswept_savanna",           new BiomeProperties("#2590A8") },
         { "minecraft:eroded_badlands",             new BiomeProperties("#497F99") },
-        { "minecraft:modified_badlands_plateau",   new BiomeProperties("#55809E") },
+        //{ "minecraft:modified_badlands_plateau",   new BiomeProperties("#55809E") },
         { "minecraft:bamboo_jungle",               new BiomeProperties("#14A2C5") },
-        { "minecraft:bamboo_jungle_hills",         new BiomeProperties("#1B9ED8") },
+        //{ "minecraft:bamboo_jungle_hills",         new BiomeProperties("#1B9ED8") },
+
+        /* 1.18 MOUNTAIN BIOMES */
+        { "minecraft:meadow",                      new BiomeProperties("#0E4ECF") },
+        // these color values are unofficial!
+        { "minecraft:grove",                       new BiomeProperties("#0E4ECF") },
+        { "minecraft:snowy_slopes",                new BiomeProperties("#0E4ECF") },
+        { "minecraft:jagged_peaks",                new BiomeProperties("#0E4ECF") },
+        { "minecraft:frozen_peaks",                new BiomeProperties("#0E4ECF") },
+        { "minecraft:stony_peaks",                 new BiomeProperties("#0E4ECF") },
+
+        /* 1.18 CAVE BIOMES */
+        // these color values are unofficial!
+        { "minecraft:lush_caves",                  new BiomeProperties("#14A2C5") },
+        { "minecraft:dripstone_caves",             new BiomeProperties("#32A598") },
 
         /* NETHER BIOMES */
         // these color values are unofficial!
