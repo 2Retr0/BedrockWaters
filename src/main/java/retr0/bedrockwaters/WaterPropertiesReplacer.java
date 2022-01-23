@@ -25,30 +25,34 @@ public class WaterPropertiesReplacer {
         // Getting the target biome ID here so that WATER_COLOR in BiomeColors.class can be set through accessor.
         Identifier targetBiomeId              = MinecraftClient.getInstance().player.world
                                                 .getRegistryManager().get(Registry.BIOME_KEY).getId(targetBiome.value());
-        BiomeProperties targetBiomeProperties = BIOME_WATER_COLORS.get(targetBiomeId.toString());
 
-        // If targetBiome has an entry.
-        if (targetBiomeProperties != null)
+        if (targetBiomeId != null)
         {
-            waterColor    = hexStringToInt(targetBiomeProperties.waterColor);
-            waterFogColor = hexStringToInt(targetBiomeProperties.waterFogColor);
+            BiomeProperties targetBiomeProperties = BIOME_WATER_COLORS.get(targetBiomeId.toString());
 
-            return getWaterFogColor ? waterFogColor : waterColor;
-            //((IBiome)(Object) targetBiome).setWaterAttributes(waterColor, waterFogColor);
+            // If targetBiome has an entry.
+            if (targetBiomeProperties != null)
+            {
+                waterColor    = hexStringToInt(targetBiomeProperties.waterColor);
+                waterFogColor = hexStringToInt(targetBiomeProperties.waterFogColor);
+
+                return getWaterFogColor ? waterFogColor : waterColor;
+                //((IBiome)(Object) targetBiome).setWaterAttributes(waterColor, waterFogColor);
+            }
+            // Otherwise, if the biome is a modded biome and the biomes water color is the vanilla water color OR
+            // the biome is a vanilla biome, automatically determine what the corresponding water color should be.
+            else if ((!targetBiomeId.getNamespace().equals("minecraft") && targetBiome.value().getWaterColor() == 4159204) ||
+                targetBiomeId.getNamespace().equals("minecraft"))
+            {
+                waterColor    = hexStringToInt(getDefaultModifiedWaterAttributes(targetBiome, false));
+                waterFogColor = hexStringToInt(getDefaultModifiedWaterAttributes(targetBiome, true));
+
+                return getWaterFogColor ? waterFogColor : waterColor;
+                //((IBiome)(Object) targetBiome).setWaterAttributes(waterColor, waterFogColor);
+            }
         }
-        // Otherwise, if the biome is a modded biome and the biomes water color is the vanilla water color OR
-        // the biome is a vanilla biome, automatically determine what the corresponding water color should be.
-        else if ((!targetBiomeId.getNamespace().equals("minecraft") && targetBiome.value().getWaterColor() == 4159204) ||
-                   targetBiomeId.getNamespace().equals("minecraft"))
-        {
-            waterColor    = hexStringToInt(getDefaultModifiedWaterAttributes(targetBiome, false));
-            waterFogColor = hexStringToInt(getDefaultModifiedWaterAttributes(targetBiome, true));
 
-            return getWaterFogColor ? waterFogColor : waterColor;
-            //((IBiome)(Object) targetBiome).setWaterAttributes(waterColor, waterFogColor);
-        }
-
-        // If all else fails (though it shouldn't), use default colors.
+        // If all else fails, use default colors.
         return 4501493;
     }
 
