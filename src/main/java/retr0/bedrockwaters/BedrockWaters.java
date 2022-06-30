@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryEntry;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +27,7 @@ public class BedrockWaters implements ClientModInitializer {
                         container, ResourcePackActivationType.DEFAULT_ENABLED))
                 .filter(success -> !success).ifPresent(success -> LOGGER.warn("Could not register built-in resource pack."));
 
-        BiomeColorsAccessor.setWaterColor((biome, x, z) -> WaterPropertiesReplacer.getBiomeWaterProperties(biome, false));
+        BiomeColorsAccessor.setWaterColor((biome, x, z) -> WaterPropertiesReplacer.getBiomeWaterProperties(RegistryEntry.of(biome), false));
     }
 
 

@@ -3,7 +3,9 @@ package retr0.bedrockwaters;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
+import retr0.bedrockwaters.mixin.BiomeInvoker;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -16,13 +18,13 @@ public class WaterPropertiesReplacer {
     // Biome Modification
     //================================================================================
     @SuppressWarnings("ConstantConditions")
-    public static int getBiomeWaterProperties(Biome targetBiome, boolean getWaterFogColor) {
+    public static int getBiomeWaterProperties(RegistryEntry<Biome> targetBiome, boolean getWaterFogColor) {
         int waterColor;
         int waterFogColor;
 
         // Getting the target biome ID here so that WATER_COLOR in BiomeColors.class can be set through accessor.
         Identifier targetBiomeId              = MinecraftClient.getInstance().player.world
-                                                .getRegistryManager().get(Registry.BIOME_KEY).getId(targetBiome);
+                                                .getRegistryManager().get(Registry.BIOME_KEY).getId(targetBiome.value());
         BiomeProperties targetBiomeProperties = BIOME_WATER_COLORS.get(targetBiomeId.toString());
 
         // If targetBiome has an entry.
@@ -36,7 +38,7 @@ public class WaterPropertiesReplacer {
         }
         // Otherwise, if the biome is a modded biome and the biomes water color is the vanilla water color OR
         // the biome is a vanilla biome, automatically determine what the corresponding water color should be.
-        else if ((!targetBiomeId.getNamespace().equals("minecraft") && targetBiome.getWaterColor() == 4159204) ||
+        else if ((!targetBiomeId.getNamespace().equals("minecraft") && targetBiome.value().getWaterColor() == 4159204) ||
                    targetBiomeId.getNamespace().equals("minecraft"))
         {
             waterColor    = hexStringToInt(getDefaultModifiedWaterAttributes(targetBiome, false));
@@ -63,7 +65,7 @@ public class WaterPropertiesReplacer {
 
 
 
-    private static String getDefaultModifiedWaterAttributes(Biome targetBiome, boolean getWaterFog) {
+    private static String getDefaultModifiedWaterAttributes(RegistryEntry<Biome> targetBiome, boolean getWaterFog) {
         Function<String, String> waterColorOf    = (id) -> BIOME_WATER_COLORS.get(id).waterColor;
         Function<String, String> waterFogColorOf = (id) -> BIOME_WATER_COLORS.get(id).waterFogColor;
 
@@ -78,7 +80,7 @@ public class WaterPropertiesReplacer {
         //================================================================================
         // Special Biome Category Cases
         //================================================================================
-        switch (targetBiome.getCategory()) {
+        switch (((BiomeInvoker)(Object) targetBiome.value()).invokeGetCategory()) {
             /* Check if biome is an ocean biome. because ocean biomes in bedrock edition have different water fog colors
              * compared to their water colors for both normal and deep variants, we need to check if we should return
              * a corresponding water color or water fog color. Either way, this particular way of deciding biome water
@@ -114,10 +116,10 @@ public class WaterPropertiesReplacer {
 
             /* Special cases for forest and plains biomes within a cold or temperate climate. */
             case PLAINS:
-                if (targetBiome.getTemperature() >= 0.3f && targetBiome.getTemperature() < 0.9f)
+                if (targetBiome.value().getTemperature() >= 0.3f && targetBiome.value().getTemperature() < 0.9f)
                     return waterColorOf.apply("minecraft:plains");
             case FOREST:
-                if (targetBiome.getTemperature() >= 0.3f && targetBiome.getTemperature() < 0.9f) {
+                if (targetBiome.value().getTemperature() >= 0.3f && targetBiome.value().getTemperature() < 0.9f) {
                     if (biomeName.contains("dark"))
                         return waterColorOf.apply("minecraft:dark_forest");
                     if (varyWaterColor)
@@ -152,54 +154,54 @@ public class WaterPropertiesReplacer {
         {
             // For all other cases...
             // (this should include biomes that belong in the TAIGA, BEACH, RIVER, EXTREME_HILLS, and ICY categories)
-            if (targetBiome.getTemperature() < 0.0f) {
+            if (targetBiome.value().getTemperature() < 0.0f) {
                 return waterColorOf.apply("minecraft:snowy_taiga");
             }
-            else if (targetBiome.getTemperature() < 0.2f) {
+            else if (targetBiome.value().getTemperature() < 0.2f) {
                 if (biomeName.contains("river") || biomeName.contains("lake"))
                     return waterColorOf.apply("minecraft:frozen_river");
                 else if (biomeName.contains("beach") || biomeName.contains("shore"))
                     return waterColorOf.apply("minecraft:snowy_beach");
                 return waterColorOf.apply("minecraft:snowy_plains");
             }
-            else if (targetBiome.getTemperature() < 0.25f) {
+            else if (targetBiome.value().getTemperature() < 0.25f) {
                 if (biomeName.contains("wood")) // FOR MOUNTAINOUS WOODED BIOMES
                     return waterColorOf.apply("minecraft:windswept_forest");
                 if (biomeName.contains("beach") || biomeName.contains("shore"))
                     return waterColorOf.apply("minecraft:stony_shore");
                 return waterColorOf.apply("minecraft:windswept_hills");
             }
-            else if (targetBiome.getTemperature() < 0.3f) {
+            else if (targetBiome.value().getTemperature() < 0.3f) {
                 if (biomeName.contains("mountain") || biomeName.contains("windswept"))
                     return waterColorOf.apply("minecraft:snowy_slopes");
                 if (biomeName.contains("giant")) // FOR GIANT BIOMES
                     return waterColorOf.apply("minecraft:old_growth_spruce_taiga");
                 return waterColorOf.apply("minecraft:taiga");
             }
-            else if (targetBiome.getTemperature() < 0.5f) {
+            else if (targetBiome.value().getTemperature() < 0.5f) {
                 return waterColorOf.apply("minecraft:old_growth_pine_taiga");
             }
-            else if (targetBiome.getTemperature() < 0.6f) {
+            else if (targetBiome.value().getTemperature() < 0.6f) {
                 return waterColorOf.apply("minecraft:river");
             }
-            else if (targetBiome.getTemperature() < 0.7f) {
+            else if (targetBiome.value().getTemperature() < 0.7f) {
                 return waterColorOf.apply("minecraft:birch_forest");
             }
-            else if (targetBiome.getTemperature() < 0.8f) {
+            else if (targetBiome.value().getTemperature() < 0.8f) {
                 return varyWaterColor ? waterColorOf.apply("minecraft:dark_forest") : waterColorOf.apply("minecraft:forest");
             }
-            else if (targetBiome.getTemperature() < 0.95f) {
+            else if (targetBiome.value().getTemperature() < 0.95f) {
                 return biomeName.contains("beach") || biomeName.contains("shore") ? waterColorOf.apply("minecraft:beach") : waterColorOf.apply("minecraft:plains");
             }
-            else if (targetBiome.getTemperature() < 1.0f) {
+            else if (targetBiome.value().getTemperature() < 1.0f) {
                 if (biomeName.contains("jungle") || biomeName.contains("rain"))
                     return waterColorOf.apply("minecraft:jungle");
                 return waterColorOf.apply("minecraft:sparse_jungle");
             }
-            else if (targetBiome.getTemperature() < 2.0f) {
+            else if (targetBiome.value().getTemperature() < 2.0f) {
                 return biomeName.contains("hill") ? waterColorOf.apply("minecraft:savanna_plateau") : waterColorOf.apply("minecraft:savanna");
             }
-            else if (targetBiome.getTemperature() >= 2.0f) {
+            else if (targetBiome.value().getTemperature() >= 2.0f) {
                 return waterColorOf.apply("minecraft:desert");
             }
         }
