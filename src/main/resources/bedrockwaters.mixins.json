@@ -1,13 +1,15 @@
 {
-  "required": true,
-  "package": "retr0.bedrockwaters.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "client": [
-    "BackgroundRendererMixin",
-    "BiomeColorsAccessor",
-    "BiomeInvoker"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+    "required": true,
+    "package": "retr0.bedrockwaters.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "client": [
+        "MixinBackgroundRenderer",
+        "MixinBiomeColors",
+        "MixinClientPlayerEntity",
+        "MixinClientWorld",
+        "MixinFluidRenderer"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
 }
