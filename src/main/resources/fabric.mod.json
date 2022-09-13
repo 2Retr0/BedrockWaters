@@ -1,36 +1,34 @@
 {
-  "schemaVersion": 1,
-  "id": "bedrockwaters",
-  "version": "${version}",
-  "name": "BedrockWaters",
-  "description": "Ports over various biome water properties from Bedrock Edition",
-  "authors": [
-    "2Retr0"
-  ],
-  "contributors": [
-    "Afrocntrik"
-  ],
-  "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/bedrockwaters",
-    "issues": "https://github.com/2Retr0/BedrockWaters/issues",
-    "sources": "https://github.com/2Retr0/BedrockWaters"
-  },
-  "license": "MIT",
-  "icon": "assets/bedrockwaters/icon.png",
-  "environment": "*",
-  "entrypoints": {
-    "client": [
-      "retr0.bedrockwaters.BedrockWaters"
-    ]
-  },
-  "mixins": [
-    "bedrockwaters.mixins.json"
-  ],
-  "depends": {
-    "fabricloader": ">=0.11.3",
-    "fabric": "*",
-    "minecraft": "1.18.x",
-    "java": ">=17",
-    "fabric-resource-loader-v0": "*"
-  }
+    "schemaVersion": 1,
+    "id": "bedrockwaters",
+    "version": "${version}",
+    "name": "BedrockWaters",
+    "description": "Ports over various biome water properties from Bedrock Edition",
+    "authors": [
+        "2Retr0"
+    ],
+    "contributors": [
+        "Afrocntrik"
+    ],
+    "contact": {
+        "homepage": "https://www.curseforge.com/minecraft/mc-mods/bedrockwaters",
+        "issues": "https://github.com/2Retr0/BedrockWaters/issues",
+        "sources": "https://github.com/2Retr0/BedrockWaters"
+    },
+    "license": "MIT",
+    "icon": "assets/bedrockwaters/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "client": [
+            "retr0.bedrockwaters.BedrockWaters"
+        ]
+    },
+    "mixins": [
+        "bedrockwaters.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.14.6",
+        "fabric": "*",
+        "fabric-resource-loader-v0": "*"
+    }
 }
