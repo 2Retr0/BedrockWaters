@@ -28,20 +28,14 @@ public class BedrockWaters implements ClientModInitializer {
         LOGGER.info(MOD_NAME + " initialized!");
 
         // Loading the BedrockWater's default resource pack.
-        FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(modContainer -> {
+        FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(modContainer ->
             ResourceManagerHelper.registerBuiltinResourcePack(
-                    new Identifier(MOD_ID, "resources"), modContainer, DEFAULT_ENABLED);
-        });
-
-
+                    new Identifier(MOD_ID, "resources"), modContainer, DEFAULT_ENABLED)
+        );
 
         // Register a resource reload listener for determining whether the mod's assets have been overwritten or not.
         ResourceManagerHelper.get(CLIENT_RESOURCES).registerReloadListener(
             new SimpleSynchronousResourceReloadListener() {
-                /**
-                 * Returns <code>true</code> if a given resource pack contains assets present in the BedrockWater's
-                 * resource pack.
-                 */
                 private boolean packHasAssets(ResourcePack pack) {
                     var assetIds = Stream.of("water_flow.png", "water_still.png")
                         .map(n -> new Identifier("textures/block/" + n));

@@ -7,13 +7,12 @@ import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.level.ColorResolver;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import retr0.bedrockwaters.util.WaterAlphaAccessor;
+import retr0.bedrockwaters.util.WaterPropertiesUtil.WaterAlphaAccessor;
 
 import static retr0.bedrockwaters.util.WaterPropertiesUtil.getWaterProperties;
 
@@ -23,13 +22,12 @@ public class MixinClientWorld implements WaterAlphaAccessor {
     private final BiomeColorCache alphaCache = new BiomeColorCache(pos -> (int) (calculateAlpha(pos) * 100f));
 
     /**
-     * @param pos
-     * @return
-     * @see ClientWorld#getColor(BlockPos, ColorResolver)
+     * @param pos The {@link BlockPos} at the target water block.
+     * @return The average opacity of all water blocks within the current biome blend radius.
      */
     @SuppressWarnings("ConstantConditions")
     @Unique
-    public float calculateAlpha(BlockPos pos) {
+    private float calculateAlpha(BlockPos pos) {
         var client = MinecraftClient.getInstance();
         var radius = client.options.getBiomeBlendRadius().getValue();
 
@@ -51,20 +49,33 @@ public class MixinClientWorld implements WaterAlphaAccessor {
         }
     }
 
+
+
+    /**
+     * An implementation of {@link WaterAlphaAccessor#getAlpha(BlockPos)} backed by {@link BiomeColorCache}.
+     */
     @Unique @Override
     public float getAlpha(BlockPos pos) {
         return (float) alphaCache.getBiomeColor(pos) / 100f;
     }
 
 
+
+    /**
+     * Makes the method also reset {@link MixinClientWorld#alphaCache}.
+     */
     @Inject(method = "resetChunkColor", at = @At("HEAD"))
-    public void onResetChunkColor(ChunkPos chunkPos, CallbackInfo ci) {
+    private void onResetChunkColor(ChunkPos chunkPos, CallbackInfo ci) {
         alphaCache.reset();
     }
 
 
+
+    /**
+     * Makes the method also reset {@link MixinClientWorld#alphaCache}.
+     */
     @Inject(method = "reloadColor", at = @At("HEAD"))
-    public void onReloadColor(CallbackInfo ci) {
+    private void onReloadColor(CallbackInfo ci) {
         alphaCache.reset();
     }
 }

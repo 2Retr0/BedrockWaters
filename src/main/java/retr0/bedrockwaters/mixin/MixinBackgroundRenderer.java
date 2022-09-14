@@ -49,9 +49,9 @@ public abstract class MixinBackgroundRenderer {
         // When the player initially submerges underwater, we set a five-second underwater visibility transition
         // (following a three-second delay) transitioning from 25-100% the biome's fog distance. This mirrors the
         // behavior present in Bedrock Edition.
-        ClientPlayerEntityEvents.START_SUBMERGE.register((clientPlayerEntity) -> {
-            underwaterStep = new SmoothStepUtil(0.25f, 1f, TRANSITION_TIME_MS, 3000f);
-        });
+        ClientPlayerEntityEvents.START_SUBMERGE.register((clientPlayerEntity) ->
+            underwaterStep = new SmoothStepUtil(0.25f, 1f, TRANSITION_TIME_MS, 3000f)
+        );
 
         // When the player exits the water, we 'complete' the fog distance transition and 'reset' the underwater
         // visibility transition.

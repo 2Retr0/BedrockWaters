@@ -18,10 +18,12 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	compileOnly files("libs/sodium-fabric-mc1.19.2-0.4.4+build.18.jar")
 }
 
 loom {
-	accessWidenerPath = file("src/main/resources/${project.archives_base_name}.accesswidener")
+	accessWidenerPath = file("src/main/resources/${archivesBaseName}.accesswidener")
 }
 
 processResources {

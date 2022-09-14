@@ -5,10 +5,7 @@ import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.level.ColorResolver;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import retr0.bedrockwaters.util.WaterPropertiesUtil;
 
 import static retr0.bedrockwaters.BedrockWaters.LOGGER;
@@ -17,15 +14,15 @@ import static retr0.bedrockwaters.BedrockWaters.LOGGER;
 public abstract class MixinBiomeColors {
     @Shadow @Final @Mutable public static ColorResolver WATER_COLOR;
 
-    private static Registry<Biome> biomeRegistry;
+    @Unique private static Registry<Biome> biomeRegistry;
 
     static {
         // Register a new listener for when the client play network handler is ready to send packets to the server.
         // Whenever the client loads a world, we update the biome registry to reference that of the loaded world's
         // dynamic registry.
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            biomeRegistry = handler.getWorld().getRegistryManager().get(Registry.BIOME_KEY);
-        });
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
+            biomeRegistry = handler.getWorld().getRegistryManager().get(Registry.BIOME_KEY)
+        );
 
 
         // We set BiomeColors#WATER_COLOR to a new handler which will return our patched biomes' water colors. As the

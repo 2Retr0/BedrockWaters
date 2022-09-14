@@ -20,6 +20,8 @@ public final class ClientPlayerEntityEvents {
             }
         });
 
+
+
     /**
      * Callback for when a ClientPlayerEntity crosses a biome in their world.
      */
@@ -29,6 +31,8 @@ public final class ClientPlayerEntityEvents {
                 callback.onStartSubmerge(clientPlayerEntity);
             }
         });
+
+
 
     /**
      * Callback for when a ClientPlayerEntity crosses a biome in their world.
@@ -40,27 +44,33 @@ public final class ClientPlayerEntityEvents {
             }
         });
 
+
+
     @FunctionalInterface
     public interface BiomeChanged {
         /**
-         * @param clientPlayerEntity
-         * @param biome
+         * @param clientPlayerEntity The player that has changed biomes.
+         * @param biome The biome that {@code clientPlayerEntity} has changed to.
          */
         void onBiomeChanged(ClientPlayerEntity clientPlayerEntity, RegistryEntry<Biome> biome);
     }
 
+
+
     @FunctionalInterface
     public interface StartSubmerge {
         /**
-         * @param clientPlayerEntity
+         * @param clientPlayerEntity The player that has submerged.
          */
         void onStartSubmerge(ClientPlayerEntity clientPlayerEntity);
     }
 
+
+
     @FunctionalInterface
     public interface EndSubmerge {
         /**
-         * @param clientPlayerEntity
+         * @param clientPlayerEntity The player that has stopped submerging.
          */
         void onEndSubmerge(ClientPlayerEntity clientPlayerEntity);
     }

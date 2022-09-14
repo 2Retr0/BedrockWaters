@@ -20,6 +20,9 @@ import retr0.bedrockwaters.ClientPlayerEntityEvents;
 public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity {
     @Unique private RegistryEntry<Biome> previousBiome;
 
+    /**
+     * Handles conditions for invoking the {@link ClientPlayerEntityEvents#BIOME_CHANGED} event.
+     */
     @Inject(method = "tick", at = @At(value = "HEAD"))
     private void onTick(CallbackInfo ci) {
         var biome = this.clientWorld.getBiome(this.getBlockPos());
@@ -32,6 +35,10 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     }
 
 
+
+    /**
+     * Handles conditions for invoking the {@link ClientPlayerEntityEvents#START_SUBMERGE} event.
+     */
     @Inject(
         method = "updateWaterSubmersionState",
         at = @At(
@@ -45,6 +52,10 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     }
 
 
+
+    /**
+     * Handles conditions for invoking the {@link ClientPlayerEntityEvents#END_SUBMERGE} event.
+     */
     @Inject(
         method = "updateWaterSubmersionState()Z",
         at = @At(
@@ -59,7 +70,7 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
 
 
-    public MixinClientPlayerEntity(ClientWorld world, GameProfile profile, @Nullable PlayerPublicKey publicKey) {
+    private MixinClientPlayerEntity(ClientWorld world, GameProfile profile, @Nullable PlayerPublicKey publicKey) {
         super(world, profile, publicKey);
     }
 }

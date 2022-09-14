@@ -9,7 +9,6 @@ import static net.minecraft.util.math.MathHelper.*;
  */
 public record SmoothStepUtil(float initialValue, float targetValue, float deltaTime, long startTime) {
     /**
-     * Initializes a new SmoothStepUtil instance.
      * @param initialValue The initial value for interpolation.
      * @param targetValue The target value for interpolation.
      * @param deltaTime The total time in milliseconds over which the interpolation should occur.
@@ -49,10 +48,11 @@ public record SmoothStepUtil(float initialValue, float targetValue, float deltaT
     /**
      * Performs Hermite interpolation between two values as used in GLSL's smoothstep().
      * <a href="https://en.wikipedia.org/wiki/Smoothstep">Source</a>
+     *
      * @param t The interpolation parameter between 0 and 1.
      * @param a The initial value for interpolation.
      * @param b The target value for interpolation.
-     * @return The current value based on interpolation progress.
+     * @return The current value based on {@code t}.
      */
     public static float smoothStep(float t, float a, float b) { return lerp(t * t * (3f - 2f * t), a, b); }
 }
