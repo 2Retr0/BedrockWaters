@@ -17,14 +17,15 @@
     },
     "license": "MIT",
     "icon": "assets/bedrockwaters/icon.png",
-    "environment": "*",
     "entrypoints": {
         "client": [
             "retr0.bedrockwaters.BedrockWaters"
         ]
     },
     "mixins": [
-        "bedrockwaters.mixins.json"
+        "bedrockwaters.mixins.json",
+        "bedrockwaters.mixins.sodium.json",
+        "bedrockwaters.mixins.iris.json"
     ],
     "depends": {
         "fabricloader": ">=0.14.6",

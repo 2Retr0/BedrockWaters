@@ -1,0 +1,12 @@
+{
+    "required": true,
+    "plugin": "retr0.bedrockwaters.compat.iris.IrisCompatMixinPlugin",
+    "package": "retr0.bedrockwaters.compat.iris.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        "MixinFluidRenderer"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

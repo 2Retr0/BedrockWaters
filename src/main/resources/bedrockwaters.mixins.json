@@ -11,8 +11,5 @@
     ],
     "injectors": {
         "defaultRequire": 1
-    },
-    "mixins": [
-        "sodium.MixinFluidRenderer"
-    ]
+    }
 }
