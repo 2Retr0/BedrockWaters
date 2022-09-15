@@ -19,7 +19,7 @@ import retr0.bedrockwaters.util.WaterPropertiesUtil;
 
 @Mixin(FluidRenderer.class)
 public abstract class MixinFluidRenderer {
-    @Shadow @Final @Mutable private int[] quadColors;
+    @Shadow(remap=false) @Final @Mutable private int[] quadColors;
 
     @Unique private boolean useSeparateAo;
 
