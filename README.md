@@ -31,4 +31,6 @@ Download the latest version over at [Modrinth](https://modrinth.com/mod/BedrockW
 
 ![Nether Wastes Biome](https://i.imgur.com/qXE5Vwv.png)
 
+![Texture Change Demo](https://imgpile.com/images/7RRAYW.gif)
+
 ![Underwater Demo](https://imgpile.com/images/7RRLkP.gif)
