@@ -23,7 +23,7 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     /**
      * Handles conditions for invoking the {@link ClientPlayerEntityEvents#BIOME_CHANGED} event.
      */
-    @Inject(method = "tick", at = @At(value = "HEAD"))
+    @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
         var biome = this.clientWorld.getBiome(this.getBlockPos());
 
