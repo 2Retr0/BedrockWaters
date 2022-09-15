@@ -5,10 +5,11 @@ BedrockWaters is a client-side quality-of-life mod which ports over the exclusiv
 ## Features
 <details><summary><b>Summary of features</b></summary>
     <ul>
-		<li> <b> More biome-specific water colors as to give each a more unique atmosphere!</b> </li>
-		<li> <b> More biome-specific underwater fog distance caps!</b> <em>(most of which further than Vanilla).</em> </li>
-		<li> <b> Biome-specific water opacity! </b><em>(contrasting murky swamps from clear mountains!).</em></li>
-        <li> <b>Dynamic water color selection for modded biomes which use the default Vanilla water color!</b></li>
+	<li> <b> More biome-specific water colors as to give each a more unique atmosphere!</b> </li>
+	<li> <b> More biome-specific underwater fog distance caps!</b> <em>(most of which further than Vanilla).</em> </li>
+	<li> <b> Biome-specific water opacity! </b><em>(contrasting murky swamps from clear mountains!).</em></li>
+	<li> <b> Default water textures have been changed to match that of Bedrock Edition!</b> </li>
+        <li> <b> Dynamic water color selection for modded biomes which use the default Vanilla water color!</b></li>
     </ul>
 </details>
 
