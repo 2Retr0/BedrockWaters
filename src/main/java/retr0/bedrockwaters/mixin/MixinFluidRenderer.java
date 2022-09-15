@@ -12,7 +12,7 @@ import retr0.bedrockwaters.util.WaterPropertiesUtil;
 @Mixin(FluidRenderer.class)
 public abstract class MixinFluidRenderer {
     /**
-     * Allows water to render with dynamic opacity--incorporating biome blend--based on the positional biome.
+     * Allows water to render with dynamic opacity--incorporating biome blend--based on the biome at {@code pos}.
      */
     @Redirect(
         method = "render",
@@ -26,7 +26,8 @@ public abstract class MixinFluidRenderer {
         // vertex() arguments
         VertexConsumer consumer, double x, double y, double z, float r, float g, float b, float u, float v, int light,
         // render() arguments
-        BlockRenderView world, BlockPos pos) {
+        BlockRenderView world, BlockPos pos)
+    {
         // If the mod assets are loaded, render the water with the position's biome's blended water opacity.
         // Since Java Edition water textures determine the opacity of the water, any resource packs that override the
         // mod's water textures should result in the vanilla behavior.
