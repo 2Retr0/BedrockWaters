@@ -1,9 +1,23 @@
 # BedrockWaters
-BedrockWaters is a client-side mod which simply ports over the Minecraft Bedrock Edition exclusive feature of biome specific water colors in order to give each biome a more unique atmosphere. Its purpose is simply aesthetic and had no other features besides changing water colors (although it feels like a more significant change in-game). All changed biome water colors can be found on the Minecraft Wiki [here](https://minecraft.gamepedia.com/Water#Bedrock_Edition).
 
-Download the latest version over at [CurseForge](https://www.curseforge.com/minecraft/mc-mods/bedrockwaters)!
+BedrockWaters is a client-side quality-of-life mod which ports over the exclusive water properties from Minecraft Bedrock Edition—specifically:
+
+## Features
+<details><summary><b>Summary of features</b></summary>
+    <ul>
+		<li> <b> More biome-specific water colors as to give each a more unique atmosphere!</b> </li>
+		<li> <b> More biome-specific underwater fog distance caps!</b> <em>(most of which further than Vanilla).</em> </li>
+		<li> <b> Biome-specific water opacity! </b><em>(contrasting murky swamps from clear mountains!).</em></li>
+        <li> <b>Dynamic water color selection for modded biomes which use the default Vanilla water color!</b></li>
+    </ul>
+</details>
+
+All features are purely aesthetic but together yield a significant visual change in-game. Most biome properties can be found on the Minecraft Wiki [here](https://minecraft.gamepedia.com/Water#Bedrock_Edition).
+
+Download the latest version over at [Modrinth](https://modrinth.com/mod/BedrockWaters)!
 
 ## Images
+
 ![Plains Biome](https://i.imgur.com/4QvV9L6.png)
 
 ![Desert Biome](https://i.imgur.com/9FgJU10.png)
@@ -15,3 +29,5 @@ Download the latest version over at [CurseForge](https://www.curseforge.com/mine
 ![Bamboo Forest Biome](https://i.imgur.com/S9Z9NOh.png)
 
 ![Nether Wastes Biome](https://i.imgur.com/qXE5Vwv.png)
+
+![Underwater Demo](https://imgpile.com/images/7RRLkP.gif)
