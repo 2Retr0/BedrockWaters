@@ -17,7 +17,7 @@ import retr0.bedrockwaters.util.WaterPropertiesUtil.WaterAlphaAccessor;
 import static retr0.bedrockwaters.util.WaterPropertiesUtil.getWaterProperties;
 
 @Mixin(ClientWorld.class)
-public class MixinClientWorld implements WaterAlphaAccessor {
+public abstract class MixinClientWorld implements WaterAlphaAccessor {
     @Unique
     private final BiomeColorCache alphaCache = new BiomeColorCache(pos -> (int) (calculateAlpha(pos) * 100f));
 
