@@ -14,9 +14,10 @@ import retr0.bedrockwaters.mixin.MixinClientWorld;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static java.util.Map.entry;
-import static java.util.Map.ofEntries;
 import static net.fabricmc.fabric.api.tag.convention.v1.ConventionalBiomeTags.*;
 import static net.minecraft.tag.BiomeTags.IS_HILL;
 import static net.minecraft.tag.BiomeTags.PRODUCES_CORALS_FROM_BONEMEAL;
@@ -137,13 +138,14 @@ public final class WaterPropertiesUtil {
     /**
      * Cache for generated biome properties.
      */
-    private static Map<RegistryKey<Biome>, BiomeProperties> propertyCache = new HashMap<>(vanillaProperties);
+    private static ConcurrentMap<RegistryKey<Biome>, BiomeProperties> propertyCache =
+        new ConcurrentHashMap<>(vanillaProperties);
 
     /**
      * Handler mappings to generate customized biome properties for unknown biomes.
      */
     private static final HandlerMap<TagKey<Biome>, RegistryEntry<Biome>, BiomeProperties> customizedProperties =
-        new HandlerMap<>(ofEntries(
+        new HandlerMap<>(Map.ofEntries(
             entry(OCEAN, b -> {
                 if (b.isIn(AQUATIC_ICY))
                     return vanillaProperties.get(b.isIn(DEEP_OCEAN) ? BiomeKeys.DEEP_FROZEN_OCEAN : BiomeKeys.FROZEN_OCEAN);
@@ -208,7 +210,7 @@ public final class WaterPropertiesUtil {
         // Register a new listener for the disconnection of the client play network handler. Whenever the client exits
         // a world, we clear the cache containing generated biome properties as it may contain data pack biomes.
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) ->
-            propertyCache = new HashMap<>(vanillaProperties)
+            propertyCache = new ConcurrentHashMap<>(vanillaProperties)
         );
     }
 
@@ -223,27 +225,25 @@ public final class WaterPropertiesUtil {
      * @return A {@link BiomeProperties} reference containing the updated water properties.
      */
     public static BiomeProperties getWaterProperties(RegistryKey<Biome> biomeKey, RegistryEntry<Biome> biomeRef) {
-        var biomeProperties = propertyCache.get(biomeKey);
+        var properties = propertyCache.get(biomeKey);
         var biome = biomeRef.value();
 
         // If the biome does yet have a cached property, generate properties and add them to the cache.
-        if (biomeProperties == null) {
-            biomeProperties = customizedProperties.handle(biomeRef, biomeRef::isIn);
+        if (properties == null) {
+            properties = customizedProperties.handle(biomeRef, biomeRef::isIn);
 
             // For biomes which do not have default vanilla properties, we want to instead use their assigned water and
             // water fog colors but still keep the generated water fog distance (as it's a property not associated
             // with biome instances).
             if (!hasDefaultProperties(biome)) {
-                biomeProperties = new BiomeProperties(
-                    biome.getWaterColor(),
-                    biome.getWaterFogColor(),
-                    biomeProperties.waterFogDistance(),
-                    biomeProperties.waterAlpha());
+                properties = new BiomeProperties(
+                    biome.getWaterColor(), biome.getWaterFogColor(),
+                    properties.waterFogDistance(), properties.waterAlpha());
             }
-            propertyCache.put(biomeKey, biomeProperties);
+            propertyCache.putIfAbsent(biomeKey, properties);
         }
 
-        return biomeProperties;
+        return properties;
     }
 
 
