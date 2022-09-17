@@ -66,7 +66,7 @@ public abstract class MixinClientWorld implements WaterAlphaAccessor {
      */
     @Inject(method = "resetChunkColor", at = @At("HEAD"))
     private void onResetChunkColor(ChunkPos chunkPos, CallbackInfo ci) {
-        alphaCache.reset();
+        alphaCache.reset(chunkPos.x, chunkPos.z);
     }
 
 
