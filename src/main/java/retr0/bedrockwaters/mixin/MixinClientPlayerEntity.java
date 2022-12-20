@@ -4,17 +4,15 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import retr0.bedrockwaters.ClientPlayerEntityEvents;
+import retr0.bedrockwaters.event.ClientPlayerEntityEvents;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity {
@@ -68,9 +66,5 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
         ClientPlayerEntityEvents.END_SUBMERGE.invoker().onEndSubmerge((ClientPlayerEntity) (Object) this);
     }
 
-
-
-    private MixinClientPlayerEntity(ClientWorld world, GameProfile profile, @Nullable PlayerPublicKey publicKey) {
-        super(world, profile, publicKey);
-    }
+    public MixinClientPlayerEntity(ClientWorld world, GameProfile profile) { super(world, profile); }
 }

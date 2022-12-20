@@ -14,12 +14,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import retr0.bedrockwaters.ClientPlayerEntityEvents;
+import retr0.bedrockwaters.event.ClientPlayerEntityEvents;
 import retr0.bedrockwaters.util.SmoothStepUtil;
-import retr0.bedrockwaters.util.WaterPropertiesUtil;
+import retr0.bedrockwaters.util.WaterPropertiesManager;
 
 import static net.minecraft.client.render.CameraSubmersionType.WATER;
-import static retr0.bedrockwaters.util.WaterPropertiesUtil.DEFAULT_BEDROCK_PROPERTIES;
+import static retr0.bedrockwaters.util.WaterPropertiesManager.DEFAULT_BEDROCK_PROPERTIES;
 
 @Mixin(BackgroundRenderer.class)
 public abstract class MixinBackgroundRenderer {
@@ -36,7 +36,7 @@ public abstract class MixinBackgroundRenderer {
     static {
         // Whenever the player crosses over to a new biome, we alter the target color and distance to match the biome.
         ClientPlayerEntityEvents.BIOME_CHANGED.register(((clientPlayerEntity, biome) -> {
-            var properties = WaterPropertiesUtil.getWaterProperties(biome);
+            var properties = WaterPropertiesManager.getWaterProperties(biome);
 
             targetFogColor = properties.waterFogColor();
             targetFogDistance = properties.waterFogDistance();
@@ -66,6 +66,7 @@ public abstract class MixinBackgroundRenderer {
      * Returns the Bedrock Edition water color instead of vanilla. Assumes that the target biome is the biome that the
      * player currently resides in.
      */
+    @SuppressWarnings("InvalidInjectorMethodSignature")
     @ModifyVariable(
         method = "render",
         at = @At(
@@ -111,4 +112,3 @@ public abstract class MixinBackgroundRenderer {
         }
     }
 }
-

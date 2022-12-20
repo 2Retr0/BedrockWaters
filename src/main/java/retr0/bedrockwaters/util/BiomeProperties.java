@@ -1,6 +1,6 @@
 package retr0.bedrockwaters.util;
 
-import static retr0.bedrockwaters.util.WaterPropertiesUtil.DEFAULT_WATER_FOG_DISTANCE;
+import static retr0.bedrockwaters.util.WaterPropertiesManager.DEFAULT_WATER_FOG_DISTANCE;
 
 /**
  * A record containing the water and water fog color for a biome. It can be initialized with Integer values or
@@ -10,9 +10,9 @@ import static retr0.bedrockwaters.util.WaterPropertiesUtil.DEFAULT_WATER_FOG_DIS
  * @param waterFogColor The biome's water fog color.
  * @param waterFogDistance The biome's underwater fog distance.
  */
-public record BiomeProperties(int waterColor, int waterFogColor, int waterFogDistance, float waterAlpha) {
-    public BiomeProperties(String waterColor, String waterFogColor, int waterFogDistance, float waterAlpha) {
-        this(Integer.decode(waterColor), Integer.decode(waterFogColor), waterFogDistance, waterAlpha);
+public record BiomeProperties(int waterColor, int waterFogColor, int waterFogDistance, float waterOpacity) {
+    public BiomeProperties(String waterColor, String waterFogColor, int waterFogDistance, float waterOpacity) {
+        this(Integer.decode(waterColor), Integer.decode(waterFogColor), waterFogDistance, waterOpacity);
     }
 
     public BiomeProperties(String waterColor, String waterFogColor, int waterFogDistance) {

@@ -3,14 +3,11 @@ package retr0.bedrockwaters.util;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import retr0.bedrockwaters.mixin.MixinClientWorld;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,15 +16,14 @@ import java.util.concurrent.ConcurrentMap;
 
 import static java.util.Map.entry;
 import static net.fabricmc.fabric.api.tag.convention.v1.ConventionalBiomeTags.*;
-import static net.minecraft.tag.BiomeTags.IS_HILL;
-import static net.minecraft.tag.BiomeTags.PRODUCES_CORALS_FROM_BONEMEAL;
-import static retr0.bedrockwaters.BedrockWaters.areAssetsLoaded;
+import static net.minecraft.registry.tag.BiomeTags.IS_HILL;
+import static net.minecraft.registry.tag.BiomeTags.PRODUCES_CORALS_FROM_BONEMEAL;
 
 /**
  * Utility for generating and handling custom water properties for biomes.
  */
 @Environment(EnvType.CLIENT)
-public final class WaterPropertiesUtil {
+public final class WaterPropertiesManager {
     public static final BiomeProperties DEFAULT_VANILLA_PROPERTIES = new BiomeProperties("#3F76E4", "#050533", 15);
     public static final BiomeProperties DEFAULT_BEDROCK_PROPERTIES = new BiomeProperties("#44AFF5", "#44AFF5", 15);
     public static final int DEFAULT_WATER_FOG_DISTANCE = 15;
@@ -35,7 +31,6 @@ public final class WaterPropertiesUtil {
     /**
      * Field to hold mappings from biome registry keys to biome properties for vanilla biomes;
      */
-    @SuppressWarnings("RedundantTypeArguments")
     private static final Map<RegistryKey<Biome>, BiomeProperties> vanillaProperties =
         new HashMap<>(Map.<RegistryKey<Biome>, BiomeProperties>ofEntries(
             /* OCEAN BIOMES */
@@ -238,7 +233,7 @@ public final class WaterPropertiesUtil {
             if (!hasDefaultProperties(biome)) {
                 properties = new BiomeProperties(
                     biome.getWaterColor(), biome.getWaterFogColor(),
-                    properties.waterFogDistance(), properties.waterAlpha());
+                    properties.waterFogDistance(), properties.waterOpacity());
             }
             propertyCache.putIfAbsent(biomeKey, properties);
         }
@@ -249,28 +244,12 @@ public final class WaterPropertiesUtil {
 
 
     /**
-     * @see WaterPropertiesUtil#getWaterProperties(RegistryKey, RegistryEntry)
+     * @see WaterPropertiesManager#getWaterProperties(RegistryKey, RegistryEntry)
      */
     public static BiomeProperties getWaterProperties(RegistryEntry<Biome> biomeRef) {
         var biomeKey = biomeRef.getKey();
 
         return biomeKey.isPresent() ? getWaterProperties(biomeKey.get(), biomeRef) : DEFAULT_BEDROCK_PROPERTIES;
-    }
-
-
-
-    /**
-     * Like {@link WaterAlphaAccessor#getAlpha(BlockPos)} but depends on the current client world.
-     *
-     * @param pos The {@link BlockPos} at the target water block.
-     * @return The cached biome blend setting-dependent water alpha at {@code pos}; or, if not in-game, {@code 0f}.
-     */
-    public static float getBlendedAlpha(BlockPos pos) {
-        var clientWorld = ((WaterAlphaAccessor) MinecraftClient.getInstance().world);
-
-        if (clientWorld == null) return 0f;
-
-        return areAssetsLoaded ? clientWorld.getAlpha(pos) : 1f;
     }
 
 
@@ -285,18 +264,5 @@ public final class WaterPropertiesUtil {
     public static boolean hasDefaultProperties(Biome biome) {
         return biome.getWaterColor() == DEFAULT_VANILLA_PROPERTIES.waterColor() &&
             biome.getWaterFogColor() == DEFAULT_VANILLA_PROPERTIES.waterFogColor();
-    }
-
-
-
-    /**
-     * Interface for accessing {@link MixinClientWorld#getAlpha(BlockPos)}.
-     */
-    public interface WaterAlphaAccessor {
-        /**
-         * @param pos The {@link BlockPos} at the target water block.
-         * @return The biome blend setting-dependent water alpha at {@code pos}.
-         */
-        default float getAlpha(BlockPos pos) { throw new AssertionError(); }
     }
 }

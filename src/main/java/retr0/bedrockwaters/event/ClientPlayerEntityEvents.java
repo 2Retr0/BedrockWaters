@@ -1,11 +1,11 @@
-package retr0.bedrockwaters;
+package retr0.bedrockwaters.event;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 
 @Environment(EnvType.CLIENT)
