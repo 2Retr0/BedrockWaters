@@ -30,8 +30,15 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // Dev Environment Dependencies
-    modCompileOnly "maven.modrinth:sodium:mc1.19.2-0.4.4"
-    modCompileOnly "maven.modrinth:iris:1.19.x-v1.3.1"
+    modCompileOnly "maven.modrinth:sodium:${project.sodium_version}"
+    modCompileOnly "maven.modrinth:iris:${project.iris_version}"
+
+//    modRuntimeOnly "maven.modrinth:sodium:${project.sodium_version}"
+//    modRuntimeOnly 'org.joml:joml:1.10.4'
+//
+//    modRuntimeOnly "maven.modrinth:iris:${project.iris_version}"
+//    modRuntimeOnly 'org.anarres:jcpp:1.4.14'
+//    modRuntimeOnly 'io.github.douira:glsl-transformer:1.0.1'
 }
 
 loom {
@@ -76,7 +83,7 @@ publishing {
 }
 
 curseforge {
-    apiKey = System.getenv("CURSEFORGE_TOKEN") + ""
+    String apiKey = System.getenv("CURSEFORGE_TOKEN")
     project {
         id            = project.curseforge_id
         changelogType = 'markdown'
