@@ -30,15 +30,16 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // Dev Environment Dependencies
-    modCompileOnly "maven.modrinth:sodium:${project.sodium_version}"
-    modCompileOnly "maven.modrinth:iris:${project.iris_version}"
+    modRuntimeOnly "maven.modrinth:modmenu:${project.mod_menu_version}"
 
-//    modRuntimeOnly "maven.modrinth:sodium:${project.sodium_version}"
-//    modRuntimeOnly 'org.joml:joml:1.10.4'
-//
-//    modRuntimeOnly "maven.modrinth:iris:${project.iris_version}"
-//    modRuntimeOnly 'org.anarres:jcpp:1.4.14'
-//    modRuntimeOnly 'io.github.douira:glsl-transformer:1.0.1'
+    modCompileOnly "maven.modrinth:sodium:${project.sodium_version}"
+    modRuntimeOnly "maven.modrinth:sodium:${project.sodium_version}"
+    modRuntimeOnly 'org.joml:joml:1.10.4'
+
+    modCompileOnly "maven.modrinth:iris:${project.iris_version}"
+    modRuntimeOnly "maven.modrinth:iris:${project.iris_version}"
+    modRuntimeOnly 'org.anarres:jcpp:1.4.14'
+    modRuntimeOnly 'io.github.douira:glsl-transformer:2.0.0-pre8'
 }
 
 loom {
