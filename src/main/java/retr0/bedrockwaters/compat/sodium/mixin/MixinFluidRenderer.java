@@ -1,7 +1,7 @@
 package retr0.bedrockwaters.compat.sodium.mixin;
 
 import me.jellysquid.mods.sodium.client.model.quad.ModelQuadView;
-import me.jellysquid.mods.sodium.client.render.pipeline.FluidRenderer;
+import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.FluidRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
@@ -20,7 +20,7 @@ public abstract class MixinFluidRenderer {
      */
     @SuppressWarnings("DataFlowIssue")
     @Redirect(
-        method = "calculateQuadColors",
+        method = "updateQuad",
         at = @At(
             value = "INVOKE",
             target = "Lme/jellysquid/mods/sodium/client/util/color/ColorABGR;mul(IF)I"),

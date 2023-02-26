@@ -4,7 +4,7 @@ import me.jellysquid.mods.sodium.client.model.light.LightPipeline;
 import me.jellysquid.mods.sodium.client.model.quad.ModelQuadView;
 import me.jellysquid.mods.sodium.client.model.quad.blender.ColorSampler;
 import me.jellysquid.mods.sodium.client.render.chunk.compile.buffers.ChunkModelBuilder;
-import me.jellysquid.mods.sodium.client.render.pipeline.FluidRenderer;
+import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.FluidRenderer;
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.fluid.FluidState;
@@ -45,7 +45,7 @@ public abstract class MixinFluidRenderer {
      */
     // Iris's MixinFluidRenderer redirects ColorABGR#mul() so we must instead patch alpha after.
     @SuppressWarnings("DataFlowIssue")
-    @Inject(method = "calculateQuadColors", at = @At("TAIL"))
+    @Inject(method = "updateQuad", at = @At("TAIL"))
     private void injectAlpha(
         ModelQuadView quad, BlockRenderView world, BlockPos pos, LightPipeline lighter, Direction dir, float brightness,
         ColorSampler<FluidState> colorSampler, FluidState fluidState, CallbackInfo ci)
