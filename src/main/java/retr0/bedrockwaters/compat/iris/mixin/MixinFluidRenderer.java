@@ -5,6 +5,7 @@ import me.jellysquid.mods.sodium.client.model.quad.ModelQuadView;
 import me.jellysquid.mods.sodium.client.model.quad.blender.ColorSampler;
 import me.jellysquid.mods.sodium.client.render.chunk.compile.buffers.ChunkModelBuilder;
 import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.FluidRenderer;
+import me.jellysquid.mods.sodium.client.util.color.ColorABGR;
 import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.fluid.FluidState;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import retr0.bedrockwaters.extension.ExtensionClientWorld;
 
-@Mixin(FluidRenderer.class)
+@Pseudo @Mixin(FluidRenderer.class)
 public abstract class MixinFluidRenderer {
     @Shadow(remap=false) @Final @Mutable private int[] quadColors;
 
@@ -42,8 +43,8 @@ public abstract class MixinFluidRenderer {
     /**
      * Alters quad colors to reflect dynamic water opacity--incorporating biome blend--based on the biome at {@code pos}
      * after all other calculations have been done.
+     * @implNote Iris's MixinFluidRenderer redirects {@link ColorABGR#mul(int, float)} so we must patch after.
      */
-    // Iris's MixinFluidRenderer redirects ColorABGR#mul() so we must instead patch alpha after.
     @SuppressWarnings("DataFlowIssue")
     @Inject(method = "updateQuad", at = @At("TAIL"))
     private void injectAlpha(
@@ -61,11 +62,6 @@ public abstract class MixinFluidRenderer {
 
 
 
-    /**
-     * @param color An ABGR formatted color.
-     * @param factor The factor to which the alpha will be multiplied.
-     * @return The alpha-multiplied color.
-     */
     private static int multiplyAlpha(int color, float factor) {
         int alpha = (int) (factor * (color >> 24 & 0xFF));
 

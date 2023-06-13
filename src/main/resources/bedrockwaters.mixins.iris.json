@@ -1,5 +1,5 @@
 {
-    "required": true,
+    "required": false,
     "plugin": "retr0.bedrockwaters.compat.iris.IrisCompatMixinPlugin",
     "package": "retr0.bedrockwaters.compat.iris.mixin",
     "compatibilityLevel": "JAVA_17",

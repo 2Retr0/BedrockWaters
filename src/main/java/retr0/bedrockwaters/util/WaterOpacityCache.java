@@ -12,7 +12,6 @@ import static retr0.bedrockwaters.util.WaterPropertiesManager.getWaterProperties
 
 public class WaterOpacityCache {
     private final BiomeColorCache opacityCache = new BiomeColorCache(pos -> (int) (getAverageOpacity(pos) * 100f));
-
     private final MinecraftClient client;
     private final World world;
 
@@ -20,7 +19,6 @@ public class WaterOpacityCache {
         this.client = client;
         this.world = world;
     }
-
 
 
     /**
@@ -33,11 +31,13 @@ public class WaterOpacityCache {
     }
 
 
+    public void reset() {
+        opacityCache.reset();
+    }
 
-    public void reset() { opacityCache.reset(); }
-
-    public void reset(int chunkX, int chunkZ) { opacityCache.reset(chunkX, chunkZ); }
-
+    public void reset(int chunkX, int chunkZ) {
+        opacityCache.reset(chunkX, chunkZ);
+    }
 
 
     /**
@@ -62,7 +62,7 @@ public class WaterOpacityCache {
                 opacity = getWaterProperties(world.getBiome(mutable)).waterOpacity();
             }
 
-            return totalOpacity / MathHelper.square((radius * 2 + 1));
+            return totalOpacity / MathHelper.square(radius * 2 + 1);
         }
     }
 

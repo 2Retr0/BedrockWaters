@@ -14,7 +14,8 @@ import retr0.bedrockwaters.util.WaterOpacityCache;
 
 @Mixin(ClientWorld.class)
 public abstract class MixinClientWorld implements ExtensionClientWorld {
-    @Unique public final WaterOpacityCache waterOpacityCache =
+    @Unique
+    public final WaterOpacityCache waterOpacityCache =
         new WaterOpacityCache(MinecraftClient.getInstance(), (ClientWorld) (Object) this);
 
 
@@ -24,12 +25,10 @@ public abstract class MixinClientWorld implements ExtensionClientWorld {
     }
 
 
-
     @Inject(method = "resetChunkColor", at = @At("HEAD"))
     private void resetOpacityCacheChunk(ChunkPos chunkPos, CallbackInfo ci) {
         waterOpacityCache.reset(chunkPos.x, chunkPos.z);
     }
-
 
 
     @Inject(method = "reloadColor", at = @At("HEAD"))

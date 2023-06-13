@@ -1,0 +1,12 @@
+{
+    "bedrockwaters.toast.header": "Exploring Biome",
+    "bedrockwaters.carrotconfig.title": "TravellersToasts Configuration!",
+
+    "bedrockwaters.carrotconfig.roundedIconBackground.name": "Use Rounded Icon Background",
+
+    "bedrockwaters.carrotconfig.maxInhabitedTime.name": "Max Chunk Inhabited Time",
+    "bedrockwaters.carrotconfig.maxInhabitedTime.tooltip": "Denotes the maximum time (in minutes) a chunk can have a player in its vicinity before biome toasts are prevented from showing within its borders.\n\n(§oHigher values may be preferable for high-player worlds!§r§r)",
+
+    "bedrockwaters.carrotconfig.toastCooldownTime.name": "Toast Cooldown Time",
+    "bedrockwaters.carrotconfig.toastCooldownTime.tooltip": "Denotes the time (in minutes) a biome toast will be prevented from showing again (§oper biome§r)."
+}

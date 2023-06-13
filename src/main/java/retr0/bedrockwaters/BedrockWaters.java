@@ -16,5 +16,6 @@ public class BedrockWaters implements ClientModInitializer {
         LOGGER.info(MOD_NAME + " initialized!");
 
         ResourceManager.register();
+//        CarrotConfig.init(MOD_ID, BedrockWatersConfig.class);
     }
 }

@@ -21,13 +21,13 @@ public abstract class MixinBiomeColors {
         // Register a new listener for when the client play network handler is ready to send packets to the server.
         // Whenever the client loads a world, we update the biome registry to reference that of the loaded world's
         // dynamic registry.
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            biomeRegistry = handler.getWorld().getRegistryManager().get(RegistryKeys.BIOME);
-            }
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
+            biomeRegistry = handler.getWorld().getRegistryManager().get(RegistryKeys.BIOME)
         );
 
         // We set BiomeColors#WATER_COLOR to a new handler which will return our patched biomes' water colors. As the
-        // biome's registry key and entry is dependent on world's dynamic registry, we will use our maintained registry.
+        // biome's registry key and entry is dependent on the world's dynamic registry, we will use our maintained
+        // registry.
         WATER_COLOR = (biome, x, z) -> {
             // If the client is on a server, we patch the biome water colors dynamically when requested.
             var biomeKey = biomeRegistry.getKey(biome).orElse(null);

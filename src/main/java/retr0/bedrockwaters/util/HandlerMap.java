@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 
 /**
  * A utility which promotes cleaner control flow at the cost of some performance (when compared to an if-else control
- * flow counterpart). Specifically designed for handling possible arguments for an instance method.
+ * flow counterpart). Specifically, designed for handling possible arguments for an instance method.
  *
  * @param handlerMappings A mapping from keys to single-argument handlers.
  * @param defaultValue A fallback value for when no mapping can be found.

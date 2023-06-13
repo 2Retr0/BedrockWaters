@@ -2,34 +2,36 @@
     "schemaVersion": 1,
     "id": "bedrockwaters",
     "version": "${version}",
+
     "name": "BedrockWaters",
     "description": "Ports over various biome water properties from Bedrock Edition",
-    "authors": [
-        "2Retr0"
-    ],
+    "authors": [ "2Retr0" ],
     "contributors": [
         "Afrocntrik"
     ],
     "contact": {
         "homepage": "https://www.curseforge.com/minecraft/mc-mods/bedrockwaters",
-        "issues": "https://github.com/2Retr0/BedrockWaters/issues",
-        "sources": "https://github.com/2Retr0/BedrockWaters"
+        "sources": "https://github.com/2Retr0/BedrockWaters",
+        "issues": "https://github.com/2Retr0/BedrockWaters/issues"
     },
+
     "license": "MIT",
     "icon": "assets/bedrockwaters/icon.png",
+
     "entrypoints": {
-        "client": [
-            "retr0.bedrockwaters.BedrockWaters"
-        ]
+        "client": [ "retr0.bedrockwaters.BedrockWaters" ]
     },
+    "accessWidener" : "bedrockwaters.accesswidener",
     "mixins": [
         "bedrockwaters.mixins.json",
         "bedrockwaters.mixins.sodium.json",
         "bedrockwaters.mixins.iris.json"
     ],
+
     "depends": {
-        "fabricloader": ">=0.14.6",
-        "fabric": "*",
-        "fabric-resource-loader-v0": "*"
+        "fabric-networking-api-v1": "*",
+        "fabric-entity-events-v1": "*",
+        "fabric-resource-loader-v0": "*",
+        "fabric-convention-tags-v1": "*"
     }
 }

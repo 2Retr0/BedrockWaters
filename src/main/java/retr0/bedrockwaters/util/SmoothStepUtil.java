@@ -29,7 +29,9 @@ public record SmoothStepUtil(float initialValue, float targetValue, float deltaT
      * Used to represent an already completed transition.
      * @see SmoothStepUtil#SmoothStepUtil
      */
-    public SmoothStepUtil(float finalValue) { this(finalValue, finalValue, 0.001f, 0L); }
+    public SmoothStepUtil(float finalValue) {
+        this(finalValue, finalValue, 0.001f, 0L);
+    }
 
 
 
@@ -54,5 +56,7 @@ public record SmoothStepUtil(float initialValue, float targetValue, float deltaT
      * @param b The target value for interpolation.
      * @return The current value based on {@code t}.
      */
-    public static float smoothStep(float t, float a, float b) { return lerp(t * t * (3f - 2f * t), a, b); }
+    public static float smoothStep(float t, float a, float b) {
+        return lerp(t * t * (3f - 2f * t), a, b);
+    }
 }

@@ -1,22 +1,24 @@
-import com.modrinth.minotaur.dependencies.ModDependency
-
 plugins {
-    id "fabric-loom" version "1.0-SNAPSHOT"
-    id "maven-publish"
-    id "com.matthewprenger.cursegradle" version "1.+"
-    id "com.modrinth.minotaur" version "2.+"
+    id 'fabric-loom' version '1.2-SNAPSHOT'
+    id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+version = "${project.mod_version}+${project.minecraft_version}"
+group = project.maven_group
 
-archivesBaseName    = project.archives_base_name
-version             = "${project.mod_version}+${project.minecraft_version}"
-group               = project.maven_group
+base {
+    archivesName = project.archives_base_name
+}
+
+loom {
+    accessWidenerPath = file('src/main/resources/bedrockwaters.accesswidener')
+}
 
 repositories {
+    maven { url 'https://api.modrinth.com/maven' }
     maven {
-        url = "https://api.modrinth.com/maven"
+        url "https://jitpack.io"
+        content { includeGroup "com.github.2Retr0" }
     }
 }
 
@@ -26,24 +28,29 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    // --- Fabric API ---
+    // modImplementation(fabricApi.module("fabric-api-base", project.fabric_version))
+    modImplementation(fabricApi.module("fabric-networking-api-v1", project.fabric_version))
+    modImplementation(fabricApi.module("fabric-entity-events-v1", project.fabric_version))
+    modImplementation(fabricApi.module("fabric-resource-loader-v0", project.fabric_version))
+    modImplementation(fabricApi.module("fabric-convention-tags-v1", project.fabric_version))
 
-    // Dev Environment Dependencies
-    modRuntimeOnly "maven.modrinth:modmenu:${project.mod_menu_version}"
+    // --- CarrotConfig ---
+//    modCompileOnly "com.github.2Retr0:carrotconfig:${project.carrotconfig_version}"
+//    modImplementation "com.github.2Retr0:carrotconfig:${project.carrotconfig_version}"
+//    include "com.github.2Retr0:carrotconfig:${project.carrotconfig_version}"
+
+    // --- Dev Environment Dependencies ---
+    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modLocalRuntime "maven.modrinth:modmenu:${project.modmenu_version}"
 
     modCompileOnly "maven.modrinth:sodium:${project.sodium_version}"
-    modRuntimeOnly "maven.modrinth:sodium:${project.sodium_version}"
-    modRuntimeOnly 'org.joml:joml:1.10.4'
+    modLocalRuntime "maven.modrinth:sodium:${project.sodium_version}"
 
     modCompileOnly "maven.modrinth:iris:${project.iris_version}"
-    modRuntimeOnly "maven.modrinth:iris:${project.iris_version}"
-    modRuntimeOnly 'org.anarres:jcpp:1.4.14'
-    modRuntimeOnly 'io.github.douira:glsl-transformer:2.0.0-pre8'
-}
-
-loom {
-    accessWidenerPath = file("src/main/resources/${archivesBaseName}.accesswidener")
+    modLocalRuntime "maven.modrinth:iris:${project.iris_version}"
+    modLocalRuntime "org.anarres:jcpp:1.4.14"
+    modLocalRuntime "io.github.douira:glsl-transformer:2.0.0-pre13"
 }
 
 processResources {
@@ -55,8 +62,6 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-
     // Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
     it.options.release = 17
 }
@@ -66,11 +71,14 @@ java {
     // if it is present.
     // If you remove this line, sources will not be generated.
     withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}"}
+        rename { "${it}_${archivesBaseName}"}
     }
 }
 
@@ -81,45 +89,12 @@ publishing {
             from components.java
         }
     }
-}
 
-curseforge {
-    String apiKey = System.getenv("CURSEFORGE_TOKEN")
-    project {
-        id            = project.curseforge_id
-        changelogType = 'markdown'
-        changelog     = project.changelog
-        releaseType   = 'release'
-
-        mainArtifact(remapJar) {
-            displayName = "${project.mod_name} ${project.mod_version}"
-        }
-        addArtifact    remapSourcesJar
-        addGameVersion project.minecraft_version
-        relations {
-            requiredLibrary 'fabric-api'
-        }
-        afterEvaluate {
-            uploadTask.dependsOn(remapJar)
-            uploadTask.dependsOn(remapSourcesJar)
-        }
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
     }
-    options {
-        forgeGradleIntegration = false
-    }
-}
-
-modrinth {
-    token           = System.getenv("MODRINTH_TOKEN")
-    projectId       = project.modrinth_id
-    versionName     = "${project.mod_name} ${project.mod_version}"
-    changelog       = project.changelog
-    uploadFile      = remapJar
-    additionalFiles = [remapSourcesJar]
-    gameVersions    = [project.minecraft_version]
-    loaders         = ["fabric"]
-    dependencies    = [
-            new ModDependency("P7dR8mSH", "required") // Fabric API
-    ]
-    syncBodyFrom    = rootProject.file("README.md").text
 }

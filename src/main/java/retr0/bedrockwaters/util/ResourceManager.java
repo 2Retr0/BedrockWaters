@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.util.Identifier;
-import retr0.bedrockwaters.BedrockWaters;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,7 +33,7 @@ public class ResourceManager {
 
 
     public static void register() {
-        // Loading the BedrockWater's default resource pack.
+        // Register default resource pack.
         FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(modContainer ->
             ResourceManagerHelper.registerBuiltinResourcePack(
                 new Identifier(MOD_ID, "resources"), modContainer, DEFAULT_ENABLED)
@@ -58,30 +57,42 @@ public class ResourceManager {
                 @Override
                 public void reload(net.minecraft.resource.ResourceManager manager) {
                     var modResourcesLoaded = false;
+                    var overridingPackName = "";
 
                     // We consider that the mod's assets are loaded if these conditions are met:
                     //   * BedrockWaters resource pack is loaded.
-                    //   * The BedrockWaters resource pack does not have its assets overwritten by another pack.
+                    //   * The BedrockWaters resource pack does not have any assets overwritten by another pack.
                     try (var packStream = manager.streamResourcePacks()) {
                         for (var resourcePack : packStream.toList()) {
-                            LOGGER.info(resourcePack.getName());
                             if (resourcePack instanceof ModResourcePack modResourcePack &&
                                 modResourcePack.getFabricModMetadata().getId().equals(MOD_ID))
                             {
                                 modResourcesLoaded = true;
                             } else if (modResourcesLoaded && doesPackHaveResources(resourcePack)) {
                                 modResourcesLoaded = false;
+                                overridingPackName = resourcePack.getName();
                                 break;
                             }
                         }
                         areModResourcesLoaded = modResourcesLoaded;
                     } catch (Exception e) {
-                        BedrockWaters.LOGGER.error("Error occurred while processing resource packs: ", e);
+                        LOGGER.error("Error while processing resource packs: ", e);
+                    }
+
+                    if (areModResourcesLoaded) return;
+
+                    if (overridingPackName.isEmpty()) {
+                        LOGGER.warn("Default resource pack is currently unloaded! Dynamic water opacity will be disabled!");
+                    } else {
+                        LOGGER.warn("Default resources were overwritten by resource pack named {}! Dynamic water " +
+                            "opacity will be disabled!", overridingPackName);
                     }
                 }
 
                 @Override
-                public Identifier getFabricId() { return new Identifier(MOD_ID, "resource_listener"); }
+                public Identifier getFabricId() {
+                    return new Identifier(MOD_ID, "resource_listener");
+                }
             });
     }
 }
