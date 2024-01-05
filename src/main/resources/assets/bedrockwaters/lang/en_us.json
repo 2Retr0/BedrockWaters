@@ -1,12 +1,11 @@
 {
-    "bedrockwaters.toast.header": "Exploring Biome",
-    "bedrockwaters.carrotconfig.title": "TravellersToasts Configuration!",
+    "bedrockwaters.carrotconfig.title": "BedrockWaters Configuration!",
 
-    "bedrockwaters.carrotconfig.roundedIconBackground.name": "Use Rounded Icon Background",
+    "bedrockwaters.carrotconfig.enableAlternateFog.name": "Enable Alternate Water Fog",
+    "bedrockwaters.carrotconfig.enableAlternateFog.tooltip": "Determines if underwater visibility should follow the behavior present in Bedrock edition.\n\n(§oThis usually amounts to lower underwater visibility when compared to Java edition.§r§r)",
 
-    "bedrockwaters.carrotconfig.maxInhabitedTime.name": "Max Chunk Inhabited Time",
-    "bedrockwaters.carrotconfig.maxInhabitedTime.tooltip": "Denotes the maximum time (in minutes) a chunk can have a player in its vicinity before biome toasts are prevented from showing within its borders.\n\n(§oHigher values may be preferable for high-player worlds!§r§r)",
+    "bedrockwaters.carrotconfig.enableWaterOpacityBlend.name": "Enable Per-biome Water Opacity",
+    "bedrockwaters.carrotconfig.enableWaterOpacityBlend.tooltip": "Determines if the water opacity between biomes can differ. E.g., Swamp biomes will have a higher opacity resulting in more murky-looking water.\n\n(§oThis feature is §c§oenabled §nonly§r§c§o when using the§r §c§oBedrockWaters resource pack§r§o!)\n\n(§oThis feature is §c§odisabled when using Sodium§r§o for technical reasons.§r§r)",
 
-    "bedrockwaters.carrotconfig.toastCooldownTime.name": "Toast Cooldown Time",
-    "bedrockwaters.carrotconfig.toastCooldownTime.tooltip": "Denotes the time (in minutes) a biome toast will be prevented from showing again (§oper biome§r)."
+    "bedrockwaters.carrotconfig.propertyOverrideNotice.text": "§7§oBiome properties must be edited §nmanually§r§7§o through the config file for now--sorry!§r§r"
 }

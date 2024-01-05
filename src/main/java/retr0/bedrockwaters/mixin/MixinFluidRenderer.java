@@ -29,7 +29,7 @@ public abstract class MixinFluidRenderer {
         // render() arguments
         BlockRenderView world, BlockPos pos)
     {
-        var a = ((ExtensionClientWorld) MinecraftClient.getInstance().world).getOpacity(pos);
+        var a = ((ExtensionClientWorld) MinecraftClient.getInstance().world).bedrockWaters$getOpacity(pos);
         consumer.vertex(x, y, z).color(r, g, b, a).texture(u, v).light(light).normal(0.0f, 1.0f, 0.0f).next();
     }
 }

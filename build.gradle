@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.2-SNAPSHOT'
+    id 'fabric-loom' version '1.4-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -29,28 +29,28 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // --- Fabric API ---
-    // modImplementation(fabricApi.module("fabric-api-base", project.fabric_version))
+//    modImplementation(fabricApi.module("fabric-api-base", project.fabric_version))
     modImplementation(fabricApi.module("fabric-networking-api-v1", project.fabric_version))
     modImplementation(fabricApi.module("fabric-entity-events-v1", project.fabric_version))
     modImplementation(fabricApi.module("fabric-resource-loader-v0", project.fabric_version))
     modImplementation(fabricApi.module("fabric-convention-tags-v1", project.fabric_version))
 
     // --- CarrotConfig ---
-//    modCompileOnly "com.github.2Retr0:carrotconfig:${project.carrotconfig_version}"
-//    modImplementation "com.github.2Retr0:carrotconfig:${project.carrotconfig_version}"
-//    include "com.github.2Retr0:carrotconfig:${project.carrotconfig_version}"
+    modCompileOnly "com.github.2Retr0:carrotconfig:${project.carrotconfig_version}"
+    modImplementation "com.github.2Retr0:carrotconfig:${project.carrotconfig_version}"
+    include "com.github.2Retr0:carrotconfig:${project.carrotconfig_version}"
 
     // --- Dev Environment Dependencies ---
     modLocalRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modLocalRuntime "maven.modrinth:modmenu:${project.modmenu_version}"
 
     modCompileOnly "maven.modrinth:sodium:${project.sodium_version}"
-    modLocalRuntime "maven.modrinth:sodium:${project.sodium_version}"
+//    modLocalRuntime "maven.modrinth:sodium:${project.sodium_version}"
 
     modCompileOnly "maven.modrinth:iris:${project.iris_version}"
-    modLocalRuntime "maven.modrinth:iris:${project.iris_version}"
-    modLocalRuntime "org.anarres:jcpp:1.4.14"
-    modLocalRuntime "io.github.douira:glsl-transformer:2.0.0-pre13"
+//    modLocalRuntime "maven.modrinth:iris:${project.iris_version}"
+//    modLocalRuntime "org.anarres:jcpp:1.4.14"
+//    modLocalRuntime "io.github.douira:glsl-transformer:2.0.0-pre13"
 }
 
 processResources {

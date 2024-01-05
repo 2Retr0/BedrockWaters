@@ -3,16 +3,22 @@ package retr0.bedrockwaters.util;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import retr0.bedrockwaters.config.BedrockWatersConfig;
+import retr0.carrotconfig.config.ConfigSavedCallback;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import static java.util.Map.entry;
 import static net.fabricmc.fabric.api.tag.convention.v1.ConventionalBiomeTags.*;
@@ -133,8 +139,9 @@ public final class WaterPropertiesManager {
     /**
      * Cache for generated biome properties.
      */
-    private static ConcurrentMap<RegistryKey<Biome>, BiomeProperties> propertyCache =
-        new ConcurrentHashMap<>(vanillaProperties);
+    private static ConcurrentMap<Identifier, BiomeProperties> propertyCache = new ConcurrentHashMap<>();
+
+    private static HashSet<Identifier> overwrittenBiomeIds = new HashSet<>();
 
     /**
      * Handler mappings to generate customized biome properties for unknown biomes.
@@ -201,14 +208,28 @@ public final class WaterPropertiesManager {
             entry(CLIMATE_COLD,      b -> vanillaProperties.get(BiomeKeys.TAIGA))
         ), DEFAULT_BEDROCK_PROPERTIES);
 
-    static {
-        // Register a new listener for the disconnection of the client play network handler. Whenever the client exits
-        // a world, we clear the cache containing generated biome properties as it may contain data pack biomes.
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) ->
-            propertyCache = new ConcurrentHashMap<>(vanillaProperties)
-        );
-    }
+    public static void init() {
+        // Fill property cache with vanilla biome properties
+        propertyCache = new ConcurrentHashMap<>();
+        vanillaProperties.forEach((biomeKey, properties) -> propertyCache.put(biomeKey.getValue(), properties));
 
+        // Load configured biome property overrides
+        var biomeIds = new HashSet<String>();
+        biomeIds.addAll(BedrockWatersConfig.waterColorOverrides.keySet());
+        biomeIds.addAll(BedrockWatersConfig.waterFogDistanceOverrides.keySet());
+        biomeIds.addAll(BedrockWatersConfig.waterOpacityOverrides.keySet());
+        overwrittenBiomeIds = biomeIds.stream().map(Identifier::tryParse).collect(Collectors.toCollection(HashSet::new));
+
+        // Register a new listener for the disconnection of the client play network handler. Whenever the client exits
+        // a world, we regenerate the cache containing generated biome properties as it may contain data pack biomes.
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> init());
+        ConfigSavedCallback.EVENT.register(configClass -> {
+            init();
+            var client = MinecraftClient.getInstance();
+            // TODO: Find a way to make this not run every time any setting is changed!
+            if (client.world != null) client.execute(client.worldRenderer::reload);
+        });
+    }
 
 
     /**
@@ -220,7 +241,8 @@ public final class WaterPropertiesManager {
      * @return A {@link BiomeProperties} reference containing the updated water properties.
      */
     public static BiomeProperties getWaterProperties(RegistryKey<Biome> biomeKey, RegistryEntry<Biome> biomeRef) {
-        var properties = propertyCache.get(biomeKey);
+        var biomeId = biomeKey.getValue();
+        var properties = propertyCache.get(biomeId);
         var biome = biomeRef.value();
 
         // If the biome does yet have a cached property, generate properties and add them to the cache.
@@ -230,12 +252,16 @@ public final class WaterPropertiesManager {
             // For biomes which do not have default vanilla properties, we want to instead use their assigned water and
             // water fog colors but still keep the generated water fog distance (as it's a property not associated
             // with biome instances).
-            if (!hasDefaultProperties(biome)) {
-                properties = new BiomeProperties(
-                    biome.getWaterColor(), biome.getWaterFogColor(),
-                    properties.waterFogDistance(), properties.waterOpacity());
+            if (!hasDefaultProperties(biome))
+                properties = properties.override(biome.getWaterColor(), biome.getWaterFogColor(), null, null);
+            if (overwrittenBiomeIds.contains(biomeId)) {
+                var waterColor = BedrockWatersConfig.waterColorOverrides.getOrDefault(biomeId.toString(), null);
+                var waterFogDistance = BedrockWatersConfig.waterFogDistanceOverrides.getOrDefault(biomeId.toString(), null);
+                var waterOpacity = BedrockWatersConfig.waterOpacityOverrides.getOrDefault(biomeId.toString(), null);
+                properties = properties.override(waterColor, waterColor, waterFogDistance, waterOpacity);
             }
-            propertyCache.putIfAbsent(biomeKey, properties);
+
+            propertyCache.putIfAbsent(biomeId, properties);
         }
 
         return properties;

@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Unique;
+import retr0.bedrockwaters.config.BedrockWatersConfig;
 
 import static retr0.bedrockwaters.util.WaterPropertiesManager.getWaterProperties;
 
@@ -27,7 +28,10 @@ public class WaterOpacityCache {
      * pack).
      */
     public float getBiomeOpacity(BlockPos pos) {
-        return ResourceManager.areModResourcesLoaded() ? (float) opacityCache.getBiomeColor(pos) / 100f : 1.0f;
+        if (ResourceManager.areModResourcesLoaded())
+            return BedrockWatersConfig.enableWaterOpacityBlend ? (float) opacityCache.getBiomeColor(pos) / 100f : 0.65f;
+        else
+            return 1.0f;
     }
 
 

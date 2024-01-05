@@ -1,13 +1,17 @@
 package retr0.bedrockwaters.util;
 
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ModResourcePack;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profiler;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
@@ -21,6 +25,8 @@ public class ResourceManager {
         Stream.of("textures/block/water_still.png", "textures/block/water_flow.png")
             .map(path -> new Identifier(Identifier.DEFAULT_NAMESPACE, path)).toList();
 
+    private static final Identifier MOD_RESOURCE_PACK_ID = new Identifier(MOD_ID, "resources");
+
     private static boolean areModResourcesLoaded = false;
 
     public static boolean areModResourcesLoaded() {
@@ -32,16 +38,14 @@ public class ResourceManager {
 
 
 
-    public static void register() {
+    public static void init() {
         // Register default resource pack.
         FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(modContainer ->
-            ResourceManagerHelper.registerBuiltinResourcePack(
-                new Identifier(MOD_ID, "resources"), modContainer, DEFAULT_ENABLED)
-        );
+            ResourceManagerHelper.registerBuiltinResourcePack(MOD_RESOURCE_PACK_ID, modContainer, DEFAULT_ENABLED));
 
         // Register a resource reload listener for determining whether the mod's assets have been overwritten or not.
         ResourceManagerHelper.get(CLIENT_RESOURCES).registerReloadListener(
-            new SimpleSynchronousResourceReloadListener() {
+            new IdentifiableResourceReloadListener() {
                 private boolean doesPackHaveResources(ResourcePack resourcePack) {
                     var hasResources = new AtomicBoolean(false);
 
@@ -55,38 +59,46 @@ public class ResourceManager {
                 }
 
                 @Override
-                public void reload(net.minecraft.resource.ResourceManager manager) {
-                    var modResourcesLoaded = false;
-                    var overridingPackName = "";
+                public CompletableFuture<Void> reload(
+                        Synchronizer synchronizer, net.minecraft.resource.ResourceManager manager, Profiler prepareProfiler,
+                        Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor)
+                {
+                    var packManager = MinecraftClient.getInstance().getResourcePackManager();
+                    var modResourcePackId = MOD_RESOURCE_PACK_ID.toString();
 
-                    // We consider that the mod's assets are loaded if these conditions are met:
-                    //   * BedrockWaters resource pack is loaded.
-                    //   * The BedrockWaters resource pack does not have any assets overwritten by another pack.
-                    try (var packStream = manager.streamResourcePacks()) {
-                        for (var resourcePack : packStream.toList()) {
-                            if (resourcePack instanceof ModResourcePack modResourcePack &&
-                                modResourcePack.getFabricModMetadata().getId().equals(MOD_ID))
-                            {
-                                modResourcesLoaded = true;
-                            } else if (modResourcesLoaded && doesPackHaveResources(resourcePack)) {
-                                modResourcesLoaded = false;
-                                overridingPackName = resourcePack.getName();
-                                break;
-                            }
+                    return CompletableFuture.runAsync(() -> {
+                        if (!FabricLoader.getInstance().isModLoaded("sodium")) return;
+
+                        // Disable resource pack if Sodium is loaded and forcefully reload resources.
+                        if (manager.streamResourcePacks().anyMatch(pack -> pack.getName().equals(modResourcePackId))) {
+                            packManager.disable(modResourcePackId);
+                            MinecraftClient.getInstance().reloadResources();
+                            LOGGER.warn("Dynamic water opacity is incompatible with Sodium! Mod resource pack will be disabled!");
                         }
-                        areModResourcesLoaded = modResourcesLoaded;
-                    } catch (Exception e) {
-                        LOGGER.error("Error while processing resource packs: ", e);
-                    }
+                    }, prepareExecutor).thenAcceptAsync(empty -> {
+                        if (FabricLoader.getInstance().isModLoaded("sodium")) return;
 
-                    if (areModResourcesLoaded) return;
+                        // We consider that the mod's assets are loaded if these conditions are met:
+                        //   * BedrockWaters resource pack is loaded.
+                        //   * The BedrockWaters resource pack does not have any assets overwritten by another pack.
+                        try (var packStream = manager.streamResourcePacks()) {
+                            for (var resourcePack : packStream.toList()) {
+                                if (resourcePack instanceof ModResourcePack pack && pack.getFabricModMetadata().getId().equals(MOD_ID)) {
+                                    areModResourcesLoaded = true;
+                                } else if (areModResourcesLoaded && doesPackHaveResources(resourcePack)) {
+                                    areModResourcesLoaded = false;
 
-                    if (overridingPackName.isEmpty()) {
-                        LOGGER.warn("Default resource pack is currently unloaded! Dynamic water opacity will be disabled!");
-                    } else {
-                        LOGGER.warn("Default resources were overwritten by resource pack named {}! Dynamic water " +
-                            "opacity will be disabled!", overridingPackName);
-                    }
+                                    if (resourcePack.getName().isEmpty())
+                                        LOGGER.warn("Default resource pack is currently unloaded! Dynamic water opacity will be disabled!");
+                                    else
+                                        LOGGER.warn("Default resources were overwritten by resource pack named {}! Dynamic water opacity will be disabled!", resourcePack.getName());
+                                    break;
+                                }
+                            }
+                        } catch (Exception e) {
+                            LOGGER.error("Error while processing resource packs: ", e);
+                        }
+                    }, applyExecutor).thenCompose(empty -> synchronizer.whenPrepared(null));
                 }
 
                 @Override

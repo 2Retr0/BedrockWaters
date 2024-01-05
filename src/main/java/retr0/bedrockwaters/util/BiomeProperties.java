@@ -25,4 +25,13 @@ public record BiomeProperties(int waterColor, int waterFogColor, int waterFogDis
 
     // Practically, the distance the fog ends is ~1 block ahead of where it should be--we need to correct for that.
     public int waterFogDistance() { return waterFogDistance + 1; }
+
+    public BiomeProperties override(Integer waterColor, Integer waterFogColor, Integer waterFogDistance, Float waterOpacity) {
+        return new BiomeProperties(
+                waterColor != null ? waterColor : this.waterColor,
+                waterFogColor != null ? waterFogColor : this.waterFogColor,
+                waterFogDistance != null ? waterFogDistance : this.waterFogDistance,
+                waterOpacity != null ? waterOpacity : this.waterOpacity
+        );
+    }
 }

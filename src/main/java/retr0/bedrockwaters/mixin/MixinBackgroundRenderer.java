@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import retr0.bedrockwaters.config.BedrockWatersConfig;
 import retr0.bedrockwaters.event.ClientPlayerEntityEvents;
 import retr0.bedrockwaters.util.SmoothStepUtil;
 import retr0.bedrockwaters.util.WaterPropertiesManager;
@@ -74,7 +75,9 @@ public abstract class MixinBackgroundRenderer {
             target = "Lnet/minecraft/world/biome/Biome;getWaterFogColor()I"),
         ordinal = 1
     )
-    private static int modifyWaterFogColor(int original) { return targetFogColor; }
+    private static int modifyWaterFogColor(int original) {
+        return targetFogColor;
+    }
 
 
 
@@ -92,6 +95,8 @@ public abstract class MixinBackgroundRenderer {
         Camera camera, FogType fogType, float viewDistance, boolean thickFog, float tickDelta, CallbackInfo ci,
         CameraSubmersionType cameraSubmersionType, Entity entity, FogData fogData)
     {
+        if (!BedrockWatersConfig.enableAlternateFog) return;
+
         if (cameraSubmersionType == WATER) {
             var currentFogDistance = biomeStep.currentValue();
 

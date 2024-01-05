@@ -20,7 +20,7 @@ public abstract class MixinClientWorld implements ExtensionClientWorld {
 
 
     @Unique @Override
-    public float getOpacity(BlockPos pos) {
+    public float bedrockWaters$getOpacity(BlockPos pos) {
         return waterOpacityCache.getBiomeOpacity(pos);
     }
 
