@@ -45,12 +45,12 @@ dependencies {
     modLocalRuntime "maven.modrinth:modmenu:${project.modmenu_version}"
 
     modCompileOnly "maven.modrinth:sodium:${project.sodium_version}"
-//    modLocalRuntime "maven.modrinth:sodium:${project.sodium_version}"
+    modLocalRuntime "maven.modrinth:sodium:${project.sodium_version}"
 
     modCompileOnly "maven.modrinth:iris:${project.iris_version}"
-//    modLocalRuntime "maven.modrinth:iris:${project.iris_version}"
-//    modLocalRuntime "org.anarres:jcpp:1.4.14"
-//    modLocalRuntime "io.github.douira:glsl-transformer:2.0.0-pre13"
+    modLocalRuntime "maven.modrinth:iris:${project.iris_version}"
+    modLocalRuntime "org.anarres:jcpp:1.4.14"
+    modLocalRuntime "io.github.douira:glsl-transformer:2.0.0-pre13"
 }
 
 processResources {

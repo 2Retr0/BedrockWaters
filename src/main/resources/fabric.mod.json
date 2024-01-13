@@ -23,7 +23,8 @@
     },
     "accessWidener" : "bedrockwaters.accesswidener",
     "mixins": [
-        "bedrockwaters.mixins.json"
+        "bedrockwaters.mixins.json",
+        "bedrockwaters.mixins.sodium.json"
     ],
 
     "depends": {
