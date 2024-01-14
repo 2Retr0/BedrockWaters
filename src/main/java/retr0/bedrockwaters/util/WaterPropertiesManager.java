@@ -5,11 +5,13 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import retr0.bedrockwaters.BedrockWaters;
 import retr0.bedrockwaters.config.BedrockWatersConfig;
 import retr0.carrotconfig.config.ConfigSavedCallback;
 
@@ -209,16 +211,19 @@ public final class WaterPropertiesManager {
         ), DEFAULT_BEDROCK_PROPERTIES);
 
     public static void init() {
-        // Fill property cache with vanilla biome properties
-        propertyCache = new ConcurrentHashMap<>();
-        vanillaProperties.forEach((biomeKey, properties) -> propertyCache.put(biomeKey.getValue(), properties));
-
         // Load configured biome property overrides
         var biomeIds = new HashSet<String>();
         biomeIds.addAll(BedrockWatersConfig.waterColorOverrides.keySet());
         biomeIds.addAll(BedrockWatersConfig.waterFogDistanceOverrides.keySet());
         biomeIds.addAll(BedrockWatersConfig.waterOpacityOverrides.keySet());
         overwrittenBiomeIds = biomeIds.stream().map(Identifier::tryParse).collect(Collectors.toCollection(HashSet::new));
+
+        // Fill property cache with vanilla biome properties that are not overwritten
+        propertyCache = new ConcurrentHashMap<>();
+        vanillaProperties.forEach((biomeKey, properties) -> {
+            var biomeId = biomeKey.getValue();
+            if (!overwrittenBiomeIds.contains(biomeId)) propertyCache.put(biomeId, properties);
+        });
 
         // Register a new listener for the disconnection of the client play network handler. Whenever the client exits
         // a world, we regenerate the cache containing generated biome properties as it may contain data pack biomes.
