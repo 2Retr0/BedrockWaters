@@ -10,8 +10,6 @@ public class SodiumCompatMixinPlugin extends AbstractMixinPlugin {
         var loader = FabricLoader.getInstance();
         var isClient = loader.getEnvironmentType() == EnvType.CLIENT;
 
-        // We only apply if Sodium is loaded and not Iris--Iris redirects to the same invoke and has additional
-        // conditions for when we may not want to patch water opacity.
-        return isClient && loader.isModLoaded("sodium") && !loader.isModLoaded("iris");
+        return isClient && loader.isModLoaded("sodium");
     }
 }
