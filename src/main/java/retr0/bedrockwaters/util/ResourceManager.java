@@ -23,9 +23,9 @@ import static retr0.bedrockwaters.BedrockWaters.MOD_ID;
 public class ResourceManager {
     private static final List<Identifier> RESOURCE_IDS =
         Stream.of("textures/block/water_still.png", "textures/block/water_flow.png")
-            .map(path -> new Identifier(Identifier.DEFAULT_NAMESPACE, path)).toList();
+            .map(path -> Identifier.of(Identifier.DEFAULT_NAMESPACE, path)).toList();
 
-    private static final Identifier MOD_RESOURCE_PACK_ID = new Identifier(MOD_ID, "resources");
+    private static final Identifier MOD_RESOURCE_PACK_ID = Identifier.of(MOD_ID, "resources");
 
     private static boolean areModResourcesLoaded = false;
 
@@ -70,7 +70,7 @@ public class ResourceManager {
                         if (!FabricLoader.getInstance().isModLoaded("sodium")) return;
 
                         // Disable resource pack if Sodium is loaded and forcefully reload resources.
-                        if (manager.streamResourcePacks().anyMatch(pack -> pack.getName().equals(modResourcePackId))) {
+                        if (manager.streamResourcePacks().anyMatch(pack -> pack.getId().equals(modResourcePackId))) {
                             packManager.disable(modResourcePackId);
                             MinecraftClient.getInstance().reloadResources();
                             LOGGER.warn("Dynamic water opacity is incompatible with Sodium! Mod resource pack will be disabled!");
@@ -88,10 +88,10 @@ public class ResourceManager {
                                 } else if (areModResourcesLoaded && doesPackHaveResources(resourcePack)) {
                                     areModResourcesLoaded = false;
 
-                                    if (resourcePack.getName().isEmpty())
+                                    if (resourcePack.getId().isEmpty())
                                         LOGGER.warn("Default resource pack is currently unloaded! Dynamic water opacity will be disabled!");
                                     else
-                                        LOGGER.warn("Default resources were overwritten by resource pack named {}! Dynamic water opacity will be disabled!", resourcePack.getName());
+                                        LOGGER.warn("Default resources were overwritten by resource pack named {}! Dynamic water opacity will be disabled!", resourcePack.getId());
                                     break;
                                 }
                             }
@@ -103,7 +103,7 @@ public class ResourceManager {
 
                 @Override
                 public Identifier getFabricId() {
-                    return new Identifier(MOD_ID, "resource_listener");
+                    return Identifier.of(MOD_ID, "resource_listener");
                 }
             });
     }

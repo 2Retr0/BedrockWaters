@@ -21,15 +21,15 @@ public abstract class MixinFluidRenderer {
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/client/render/block/FluidRenderer;" +
-                "vertex(Lnet/minecraft/client/render/VertexConsumer;DDDFFFFFI)V"))
+                "vertex(Lnet/minecraft/client/render/VertexConsumer;FFFFFFFFI)V"))
     private void redirectVertex(
         FluidRenderer instance,
         // vertex() arguments
-        VertexConsumer consumer, double x, double y, double z, float r, float g, float b, float u, float v, int light,
+        VertexConsumer consumer, float x, float y, float z, float r, float g, float b, float u, float v, int light,
         // render() arguments
         BlockRenderView world, BlockPos pos)
     {
         var a = ((ExtensionClientWorld) MinecraftClient.getInstance().world).bedrockWaters$getOpacity(pos);
-        consumer.vertex(x, y, z).color(r, g, b, a).texture(u, v).light(light).normal(0.0f, 1.0f, 0.0f).next();
+        consumer.vertex(x, y, z).color(r, g, b, a).texture(u, v).light(light).normal(0.0f, 1.0f, 0.0f);
     }
 }

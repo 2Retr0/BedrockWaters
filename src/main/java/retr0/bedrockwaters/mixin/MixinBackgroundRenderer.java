@@ -1,10 +1,10 @@
 package retr0.bedrockwaters.mixin;
 
+import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BackgroundRenderer.FogData;
 import net.minecraft.client.render.BackgroundRenderer.FogType;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.client.render.FogShape;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +19,7 @@ import retr0.bedrockwaters.event.ClientPlayerEntityEvents;
 import retr0.bedrockwaters.util.SmoothStepUtil;
 import retr0.bedrockwaters.util.WaterPropertiesManager;
 
-import static net.minecraft.client.render.CameraSubmersionType.WATER;
+import static net.minecraft.block.enums.CameraSubmersionType.WATER;
 import static retr0.bedrockwaters.util.WaterPropertiesManager.DEFAULT_BEDROCK_PROPERTIES;
 
 @Mixin(BackgroundRenderer.class)
